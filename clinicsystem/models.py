@@ -1,6 +1,7 @@
 from clinicsystem import app, db
 from sqlalchemy import Column, String, Integer, Float, DateTime, Enum, ForeignKey, Table
 from sqlalchemy.orm import relationship, mapped_column
+from sqlalchemy import UniqueConstraint
 from enum import Enum as RoleEnum
 from datetime import datetime
 
@@ -39,9 +40,21 @@ class User(db.Model):
 
 class Patient(User):
     medical_id = Column(String(30))
+
+    # One-to-Many with Appointment
     appointments = relationship('Appointment', backref='patient', lazy=True)
+
+    # One-to-Many with Prescription
     prescrips = relationship('Prescription', backref='patient', lazy=True)
+
+    # One-to-Many with Allergy
     allergies = relationship('Allergy', backref='patient', lazy=True)
+
+    def register_online_appointment(self):
+        pass
+
+    def view_medical_history(self):
+        pass
 
 
 class Employee(User):
@@ -50,14 +63,33 @@ class Employee(User):
     salary = Column(Float, nullable=False, default=5000000.0)
 
 class Nurse(Employee):
+    # One-to-many with ExaminationList
     examinations = relationship('ExaminationList', backref='nurse', lazy=True)
+
+    def create_examination_list(self):
+        pass
+
+    def register_patient(self):
+        pass
 
 
 class Doctor(Employee):
-    specialist = Column(String(50), nullable=False, default="General Practitioner")
+    specialist = Column(String(50), nullable=False, default="General Practitioner") # default: Bsi da khoa
+
+    # One-to-many with Prescription
     prescrips = relationship('Prescription', backref='doctor', lazy=True)
 
+    def get_examination_list(self):
+        pass
+
+    def create_prescription(self):
+        pass
+
+    def view_medical_history(self):
+        pass
+
 class Cashier(Employee):
+    # One-to-many with Bill
     bills = relationship('Bill', backref='cashier', lazy=True)
 
 class Policy(db.Model):
@@ -118,11 +150,14 @@ class Administrator(Employee):
 
 
 class ExaminationList(db.Model):
-    id = Column(Integer, primary_key=True)
-    date = Column(DateTime, nullable=False, default=datetime.now)
-    appointments = relationship('Appointment', backref='examinationList', lazy=True)
-    nurse_id = Column(String(30), ForeignKey(Nurse.id), nullable=False)
+    id = Column(Integer, primary_key=True, unique=True, nullable=False)
+    date = Column(DateTime, nullable=False, default=datetime.now, unique=True)
 
+    # One-to-many with Appointment
+    appointments = relationship('Appointment', backref='examinationList', lazy=True)
+
+    # Many-to-One with Nurse
+    nurse_id = Column(String(30), ForeignKey(Nurse.id), nullable=False)
 
 class AppointmentStatus(RoleEnum):
     PENDING_CONFIRM = 1
@@ -134,10 +169,15 @@ class AppointmentStatus(RoleEnum):
 class Appointment(db.Model):
     id = Column(String(20), unique=True, nullable=False, primary_key=True)
     number = Column(Integer, nullable=False)
-    examination_id = Column(Integer, ForeignKey(ExaminationList.id), nullable=False)
     status = Column(Enum(AppointmentStatus), default=AppointmentStatus.PENDING_CONFIRM)
+
+    # Many-to-One with ExaminationList
+    examination_id = Column(Integer, ForeignKey(ExaminationList.id), nullable=False)
+
+    # Many-to-One with Patient
     patient_id = Column(String(30), ForeignKey(Patient.id), nullable=False)
 
+    __table_agrs__ = (UniqueConstraint("examination_id", "number"))
 
 
 class BillStatus(RoleEnum):
@@ -151,7 +191,11 @@ class Bill(db.Model):
     medicine_fee = Column(Float, default=0.0)
     total = Column(Float, nullable=False)
     status = Column(Enum(BillStatus), default=BillStatus.UNPAID)
-    prescription = relationship('Prescription', back_populates='bill', uselist=False)
+
+    # One-to-One with Prescription
+    prescription = relationship('Prescription', uselist=False, back_populates='bill')
+
+    # Many-to-One with Cashier
     cashier_id = Column(String(30), ForeignKey(Cashier.id), nullable=False)
     def __init__(self):
         pass
@@ -165,15 +209,24 @@ class Prescription(db.Model):
     symptom = Column(String(150), nullable=False)
     diagnosis = Column(String(150), nullable=False)
 
+    # Many-to-one with Doctor
     doctor_id = Column(String(30), ForeignKey(Doctor.id), nullable=False)
+
+    # One-to-one with Bill
     bill_id = Column(String(20), ForeignKey(Bill.id), unique=True, nullable=False)
-    bill = relationship(Bill, back_populates='prescription')
+    bill = relationship('Bill', back_populates='prescription')
+
+    # Many-to-one with Patient
     patient_id = Column(String(30), ForeignKey(Patient.id), nullable=False)
+
+    # Many-to-Many with Prescription
     details = relationship('DetailPrescrip', back_populates='prescription')
 
 class Unit(db.Model):
     id = Column(Integer, unique=True, nullable=False, primary_key=True)
     name = Column(String(20), unique=True, nullable=False)
+
+    # One-to-Many with Medicine
     medicines = relationship('Medicine', backref='unit', lazy=True)
 
     def __str__(self):
@@ -185,19 +238,24 @@ class Medicine(db.Model):
     price = Column(Float, nullable=False)
     stock = Column(Integer, nullable=False, default=0)
 
+    # Many-to-one with Unit
     unit_id = Column(Integer, ForeignKey(Unit.id), nullable=False)
+
+    # Many-to-many with Medicine
     details = relationship('DetailPrescrip', back_populates='medicine')
 
-
+# Many-to-Many (Medicine - Prescription)
 class DetailPrescrip(db.Model):
     __tablename__ = "detail_prescrip"
 
+    # Many-to-Many ForeignKey
     medicine_id = Column(Integer, ForeignKey(Medicine.id), primary_key=True)
     prescription_id = Column(String(20), ForeignKey(Prescription.id), primary_key=True)
 
     quantity = Column(Integer, nullable=False, default=1)
     unit_name = Column(String(20), nullable=False)
     instruction = Column(String(150), nullable=False)
+
 
     medicine = relationship(Medicine, back_populates="details")
     prescription = relationship(Prescription, back_populates="details")
@@ -213,7 +271,10 @@ class Allergy(db.Model):
     description = Column(String(30), nullable=False)
     note = Column(String(30))
 
+    # Many-to-One with Patient
     patient_id = Column(String(20), ForeignKey(Patient.id), nullable=True)
+
+    # Many-to-One with Medicine
     medicine_id = Column(Integer, ForeignKey(Medicine.id), nullable=True)
 
     def is_allergic(self, patient, medicine):
@@ -221,8 +282,6 @@ class Allergy(db.Model):
 
     def get_warning(self):
         pass
-
-
 
 if __name__ == '__main__':
     with app.app_context():

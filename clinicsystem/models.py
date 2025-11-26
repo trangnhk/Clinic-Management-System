@@ -1,9 +1,10 @@
 from clinicsystem import app, db
-from sqlalchemy import Column, String, Integer, Float, DateTime, Enum, ForeignKey, Table
+from sqlalchemy import Column, String, Integer, DateTime, Enum, ForeignKey, DECIMAL, Float
 from sqlalchemy.orm import relationship, mapped_column
 from sqlalchemy import UniqueConstraint
 from enum import Enum as RoleEnum
 from datetime import datetime
+from decimal import Decimal
 
 class UserRole(RoleEnum):
     PATIENT = 1
@@ -60,7 +61,7 @@ class Patient(User):
 class Employee(User):
     __abstract__ = True
 
-    salary = Column(Float, nullable=False, default=5000000.0)
+    salary = Column(DECIMAL(10,3), nullable=False, default=5000000.0)
 
 class Nurse(Employee):
     # One-to-many with ExaminationList
@@ -95,14 +96,14 @@ class Cashier(Employee):
 class Policy(db.Model):
     id = Column(Integer, unique=True, nullable=False, primary_key=True)
     name = Column(String(20), unique=True, nullable=False)
-    number = Column(Float)
+    number = Column(DECIMAL(10,3))
     description = Column(String(50), nullable=False)
 
     def update(self, new_name: str = None, new_number: float = None):
         if new_name is not None:
             self.name = new_name
         if new_number is not None:
-            self.number = new_number
+            self.number = Decimal(str(new_number))
 
         try:
             db.session.commit()
@@ -159,6 +160,20 @@ class ExaminationList(db.Model):
     # Many-to-One with Nurse
     nurse_id = Column(String(30), ForeignKey(Nurse.id), nullable=False)
 
+    def is_successfully_add_patient(self, patient: Patient) -> bool:
+        pass
+
+    def is_successfully_deleted(self, patient: Patient) -> bool:
+        pass
+    """
+    def get_number_of_patients(self):
+        pass
+    """
+
+    def is_full(self) -> bool:
+        pass
+
+
 class AppointmentStatus(RoleEnum):
     PENDING_CONFIRM = 1
     WAITING_EXAMINATION = 2
@@ -187,13 +202,14 @@ class BillStatus(RoleEnum):
 
 class Bill(db.Model):
     id = Column(String(20), nullable=False, unique=True, primary_key=True)
-    medical_fee = Column(Float, nullable=False, default=100000.0)
-    medicine_fee = Column(Float, default=0.0)
-    total = Column(Float, nullable=False)
+    medical_fee = Column(DECIMAL(10,3), nullable=False, default=100000.000)
+    medicine_fee = Column(DECIMAL(10,3), default=0.0)
+    total = Column(DECIMAL(15,3), nullable=False)
     status = Column(Enum(BillStatus), default=BillStatus.UNPAID)
 
-    # One-to-One with Prescription
-    prescription = relationship('Prescription', uselist=False, back_populates='bill')
+    # One-to-one with Bill
+    prescrip_id = Column(String(20), ForeignKey('prescription.id'), unique=True, nullable=False)
+    prescrip = relationship('Prescription', back_populates='bill')
 
     # Many-to-One with Cashier
     cashier_id = Column(String(30), ForeignKey(Cashier.id), nullable=False)
@@ -204,6 +220,9 @@ class Bill(db.Model):
         self.total = self.medical_fee + self.medicine_fee
         return self.total
 
+    def update_status(self, new_billstatus: BillStatus):
+        self.status = new_billstatus
+
 class Prescription(db.Model):
     id = Column(String(20), unique=True, nullable=False, primary_key=True)
     symptom = Column(String(150), nullable=False)
@@ -212,15 +231,29 @@ class Prescription(db.Model):
     # Many-to-one with Doctor
     doctor_id = Column(String(30), ForeignKey(Doctor.id), nullable=False)
 
-    # One-to-one with Bill
-    bill_id = Column(String(20), ForeignKey(Bill.id), unique=True, nullable=False)
-    bill = relationship('Bill', back_populates='prescription')
+    # One-to-One with Bill
+    bill = relationship('Bill', uselist=False, back_populates='prescription')
 
     # Many-to-one with Patient
     patient_id = Column(String(30), ForeignKey(Patient.id), nullable=False)
 
     # Many-to-Many with Prescription
     details = relationship('DetailPrescrip', back_populates='prescription')
+
+    def update_clinical_info(self, symptom: str = None, diagnosis: str = None):
+        self.symptom = symptom
+        self.diagnosis = diagnosis
+
+    def add_medicine(self, detail):
+        self.details
+
+    def call_medicine_fee(self) -> Decimal:
+        if not self.details:
+            return Decimal('0.0')
+
+        total = sum(detail.cal_price() for detail in self.details)
+        return total
+
 
 class Unit(db.Model):
     id = Column(Integer, unique=True, nullable=False, primary_key=True)
@@ -235,7 +268,7 @@ class Unit(db.Model):
 class Medicine(db.Model):
     id = Column(Integer, unique=True, nullable=False, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
-    price = Column(Float, nullable=False)
+    price = Column(DECIMAL(10,3), nullable=False)
     stock = Column(Integer, nullable=False, default=0)
 
     # Many-to-one with Unit
@@ -243,6 +276,15 @@ class Medicine(db.Model):
 
     # Many-to-many with Medicine
     details = relationship('DetailPrescrip', back_populates='medicine')
+
+    # One-to-Many with Allergy
+    allergies = relationship('Allergy', backref='medicine', lazy=True)
+
+    def is_in_stock(self, stock: int) -> bool:
+        return self.stock - stock >= 0
+
+    def get_price(self) -> Decimal:
+        return self.price
 
 # Many-to-Many (Medicine - Prescription)
 class DetailPrescrip(db.Model):
@@ -256,14 +298,13 @@ class DetailPrescrip(db.Model):
     unit_name = Column(String(20), nullable=False)
     instruction = Column(String(150), nullable=False)
 
-
     medicine = relationship(Medicine, back_populates="details")
     prescription = relationship(Prescription, back_populates="details")
 
-    def cal_price(self):
+    def cal_price(self) -> Decimal:
         if self.medicine and self.medicine.price is not None:
             return self.quantity * self.medicine.price
-        return 0.0
+        return Decimal('0.0')
 
 class Allergy(db.Model):
     id = Column(String(20), unique=True, nullable=False, primary_key=True)
@@ -277,11 +318,15 @@ class Allergy(db.Model):
     # Many-to-One with Medicine
     medicine_id = Column(Integer, ForeignKey(Medicine.id), nullable=True)
 
-    def is_allergic(self, patient, medicine):
-        pass
+    def is_allergic(self, patient_id: str = None, medicine_id: str = None) -> bool:
+        allergy = Allergy.query.filter_by(patient_id=patient_id, medicine_id=medicine_id).first()
 
-    def get_warning(self):
-        pass
+        return allergy is not None
+
+    def get_warning(self, patient_id: str = None, medicine_id: str = None) -> str:
+        if self.is_allergic(patient_id=patient_id, medicine_id=medicine_id):
+            return f"PATIENT {self.patient_id.name} HAS ALLERGY WITH {self.medicine_id.name}"
+        return f"DON'T HAVING ANY ALLERGIES"
 
 if __name__ == '__main__':
     with app.app_context():

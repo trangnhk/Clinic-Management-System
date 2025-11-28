@@ -41,7 +41,7 @@ class User(db.Model):
 
 class Patient(User):
     medical_id = Column(String(30))
-    user_id = Column(ForeignKey(User.id), primary_key=True)
+    id = Column(ForeignKey(User.id), primary_key=True, unique=True, nullable=False)
 
     # One-to-Many with Appointment
     appointments = relationship('Appointment', backref='patient', lazy=True)
@@ -62,7 +62,7 @@ class Patient(User):
 class Employee(User):
     __abstract__ = True
 
-    user_id = Column(String(30), ForeignKey(User.id), primary_key=True)
+    id = Column(ForeignKey(User.id), primary_key=True, unique=True, nullable=False)
     salary = Column(DECIMAL(10,3), nullable=False, default=5000000.0)
 
 

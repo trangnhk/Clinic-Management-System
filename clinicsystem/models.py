@@ -15,7 +15,7 @@ class UserGender(RoleEnum):
     FEMALE = 2
 
 class User(db.Model):
-    __abstract__ = True
+    # __abstract__ = True
 
     id = Column(String(30), unique=True, primary_key=True, nullable=False)
     fullname = Column(String(50), nullable=False)
@@ -41,6 +41,7 @@ class User(db.Model):
 
 class Patient(User):
     medical_id = Column(String(30))
+    user_id = Column(ForeignKey(User.id), primary_key=True)
 
     # One-to-Many with Appointment
     appointments = relationship('Appointment', backref='patient', lazy=True)
@@ -61,7 +62,9 @@ class Patient(User):
 class Employee(User):
     __abstract__ = True
 
+    user_id = Column(String(30), ForeignKey(User.id), primary_key=True)
     salary = Column(DECIMAL(10,3), nullable=False, default=5000000.0)
+
 
 class Nurse(Employee):
     # One-to-many with ExaminationList

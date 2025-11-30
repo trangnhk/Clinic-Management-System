@@ -5,6 +5,7 @@ from sqlalchemy import UniqueConstraint
 from enum import Enum as RoleEnum
 from datetime import datetime
 from decimal import Decimal
+from flask_login import UserMixin
 
 class UserRole(RoleEnum):
     PATIENT = 1
@@ -14,7 +15,7 @@ class UserGender(RoleEnum):
     MALE = 1
     FEMALE = 2
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     # __abstract__ = True
 
     id = Column(String(30), unique=True, primary_key=True, nullable=False)
@@ -30,15 +31,6 @@ class User(db.Model):
     def __str__(self):
         return self.fullname
 
-    def login(self):
-        pass
-
-    def logout(self):
-        pass
-
-    def update_info(self):
-        pass
-
 class Patient(User):
     medical_id = Column(String(30))
     id = Column(ForeignKey(User.id), primary_key=True, unique=True, nullable=False)
@@ -52,11 +44,14 @@ class Patient(User):
     # One-to-Many with Allergy
     allergies = relationship('Allergy', backref='patient', lazy=True)
 
-    def register_online_appointment(self):
-        pass
-
-    def view_medical_history(self):
-        pass
+    def __init__(self, fullname, phone_number, dob, gender, address="Ho Chi Minh City"):
+        self.fullname = fullname
+        self.phone_number = phone_number
+        self.dob = dob
+        self.gender = gender
+        self.address = address
+        self.username = phone_number
+        self.password = "123456"
 
 
 class Employee(User):
@@ -70,27 +65,20 @@ class Nurse(Employee):
     # One-to-many with ExaminationList
     examinations = relationship('ExaminationList', backref='nurse', lazy=True)
 
-    def create_examination_list(self):
-        pass
-
-    def register_patient(self):
-        pass
-
-
 class Doctor(Employee):
     specialist = Column(String(50), nullable=False, default="General Practitioner") # default: Bsi da khoa
 
     # One-to-many with Prescription
     prescrips = relationship('Prescription', backref='doctor', lazy=True)
 
-    def get_examination_list(self):
-        pass
-
-    def create_prescription(self):
-        pass
-
-    def view_medical_history(self):
-        pass
+    # def get_examination_list(self):
+    #     pass
+    #
+    # def create_prescription(self):
+    #     pass
+    #
+    # def view_medical_history(self):
+    #     pass
 
 class Cashier(Employee):
     # One-to-many with Bill
@@ -120,37 +108,38 @@ class Policy(db.Model):
         return self.number
 
 class Administrator(Employee):
-    def change_policy(self, policy_name: str = None, policy_id: int = None, new_number: float = None) -> bool:
-        policy = Policy.query.get(policy_id)
-        if not policy:
-            raise ValueError(f"CAN NOT FIND POLICY_ID {policy_id}")
+    pass
+    # def change_policy(self, policy_name: str = None, policy_id: int = None, new_number: float = None) -> bool:
+    #     policy = Policy.query.get(policy_id)
+    #     if not policy:
+    #         raise ValueError(f"CAN NOT FIND POLICY_ID {policy_id}")
+    #
+    #     success = policy.update(new_name=policy_name, new_number=new_number)
+    #     return success
 
-        success = policy.update(new_name=policy_name, new_number=new_number)
-        return success
-
-    def add_medicine(self, medicine) -> bool:
-        pass
-
-    def destroy_medicine(self, medicine) -> bool:
-        pass
-
-    def update_medicine(self, medicine) -> bool:
-        pass
-
-    def add_unit(self, unit) -> bool:
-        pass
-
-    def destroy_unit(self, unit) -> bool:
-        pass
-
-    def update_unit(self, unit) -> bool:
-        pass
-
-    def get_report(self, month, year) -> []:
-        pass
-
-    def get_medicine_report(self, month, year) -> []:
-        pass
+    # def add_medicine(self, medicine) -> bool:
+    #     pass
+    #
+    # def destroy_medicine(self, medicine) -> bool:
+    #     pass
+    #
+    # def update_medicine(self, medicine) -> bool:
+    #     pass
+    #
+    # def add_unit(self, unit) -> bool:
+    #     pass
+    #
+    # def destroy_unit(self, unit) -> bool:
+    #     pass
+    #
+    # def update_unit(self, unit) -> bool:
+    #     pass
+    #
+    # def get_report(self, month, year) -> []:
+    #     pass
+    #
+    # def get_medicine_report(self, month, year) -> []:
+    #     pass
 
 
 class ExaminationList(db.Model):
@@ -163,18 +152,18 @@ class ExaminationList(db.Model):
     # Many-to-One with Nurse
     nurse_id = Column(String(30), ForeignKey(Nurse.id), nullable=False)
 
-    def is_successfully_add_patient(self, patient: Patient) -> bool:
-        pass
-
-    def is_successfully_deleted(self, patient: Patient) -> bool:
-        pass
-    """
-    def get_number_of_patients(self):
-        pass
-    """
-
-    def is_full(self) -> bool:
-        pass
+    # def is_successfully_add_patient(self, patient: Patient) -> bool:
+    #     pass
+    #
+    # def is_successfully_deleted(self, patient: Patient) -> bool:
+    #     pass
+    # """
+    # def get_number_of_patients(self):
+    #     pass
+    # """
+    #
+    # def is_full(self) -> bool:
+    #     pass
 
 
 class AppointmentStatus(RoleEnum):
@@ -216,8 +205,6 @@ class Bill(db.Model):
 
     # Many-to-One with Cashier
     cashier_id = Column(String(30), ForeignKey(Cashier.id), nullable=False)
-    def __init__(self):
-        pass
 
     def cal_total(self):
         self.total = self.medical_fee + self.medicine_fee
@@ -235,7 +222,7 @@ class Prescription(db.Model):
     doctor_id = Column(String(30), ForeignKey(Doctor.id), nullable=False)
 
     # One-to-One with Bill
-    bill = relationship('Bill', uselist=False, back_populates='prescription')
+    bill = relationship('Bill', uselist=False, back_populates='prescrip')
 
     # Many-to-one with Patient
     patient_id = Column(String(30), ForeignKey(Patient.id), nullable=False)
@@ -247,10 +234,10 @@ class Prescription(db.Model):
         self.symptom = symptom
         self.diagnosis = diagnosis
 
-    def add_medicine(self, detail):
-        self.details
+    # def add_medicine(self, detail):
+    #     self.details
 
-    def call_medicine_fee(self) -> Decimal:
+    def cal_medicine_fee(self) -> Decimal:
         if not self.details:
             return Decimal('0.0')
 
@@ -321,15 +308,15 @@ class Allergy(db.Model):
     # Many-to-One with Medicine
     medicine_id = Column(Integer, ForeignKey(Medicine.id), nullable=True)
 
-    def is_allergic(self, patient_id: str = None, medicine_id: str = None) -> bool:
-        allergy = Allergy.query.filter_by(patient_id=patient_id, medicine_id=medicine_id).first()
-
-        return allergy is not None
-
-    def get_warning(self, patient_id: str = None, medicine_id: str = None) -> str:
-        if self.is_allergic(patient_id=patient_id, medicine_id=medicine_id):
-            return f"PATIENT {self.patient_id.name} HAS ALLERGY WITH {self.medicine_id.name}"
-        return f"DON'T HAVING ANY ALLERGIES"
+    # def is_allergic(self, patient_id: str = None, medicine_id: str = None) -> bool:
+    #     allergy = Allergy.query.filter_by(patient_id=patient_id, medicine_id=medicine_id).first()
+    #
+    #     return allergy is not None
+    #
+    # def get_warning(self, patient_id: str = None, medicine_id: str = None) -> str:
+    #     if self.is_allergic(patient_id=patient_id, medicine_id=medicine_id):
+    #         return f"PATIENT {self.patient_id.name} HAS ALLERGY WITH {self.medicine_id.name}"
+    #     return f"DON'T HAVING ANY ALLERGIES"
 
 if __name__ == '__main__':
     with app.app_context():

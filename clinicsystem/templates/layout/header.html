@@ -1,0 +1,54 @@
+
+
+<nav class="navbar navbar-expand-lg navbar-light text-center fw-bold mb-4 text-dark "
+     style="background-color: #FFBFCE;">
+
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            <img src="{{ url_for('static', filename='logo/logo_medik.png') }}"
+                 width="150" height="55"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-ite">
+                    <a class="nav-link active" aria-current="page" href="/">Home</a>
+                </li>
+                {%for m in menu_bar%}
+                <li class="nav-item">
+                    <a class="nav-link" href="/?menu_bar_id={{m.id}}">{{m.name}}</a>
+                </li>
+                {%endfor%}
+                {% if current_user.is_authenticated: %}
+                <li class="nav-item">
+                    <a class="nav-link active" href="/login" tabindex="-1" style="font-size: 16px;">
+                        <img src="{{ url_for('static', filename='avatar/avatar_default.jpg') }}" width="35">
+                        Hi , {{current_user.username}} !</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/logout" tabindex="-1" style="font-size: 12px;">Logout</a>
+                </li>
+
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link active" href="/login" tabindex="-1" style="font-size: 18px;">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/register" tabindex="-1" style="font-size: 18px;">Register</a>
+                </li>
+                {% endif %}
+
+
+            </ul>
+            <form class="d-flex" method="get">
+                <input class="form-control me-2" type="text" placeholder="Search..." aria-label="Search" name="q">
+                <button class="btn btn-outline-success" type="submit" style="background-color: #009900; color: white;">
+                    Search
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>

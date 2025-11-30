@@ -1,0 +1,54 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+
+    <div class="login-wrapper w-100" style="max-width: 400px;">
+
+        <h2 class="text-center fw-bold mb-4" style="color: #CC5063">Đăng nhập</h2>
+
+        <form method="post">
+
+            <div class="input-group mb-3 rounded-pill bg-light-gray px-3 py-2 align-items-center" style="border: 2px solid #DBCECE;">
+                    <span class="text-secondary border-0 bg-transparent">
+                        <i class="fa-solid fa-user"></i>
+                    </span>
+                <input type="text" class="form-control bg-transparent shadow-none fw-semibold text-dark" style="border: none; border-radius: 50px;"
+                       placeholder="Username" required name="username">
+            </div>
+
+            <div class="input-group mb-3 rounded-pill bg-light-gray px-3 py-2 align-items-center" style="border: 2px solid #DBCECE;">
+                    <span class="text-secondary border-0 bg-transparent">
+                        <i class="fa-solid fa-lock"></i>
+                    </span>
+                <input type="password" class="form-control border-0 bg-transparent shadow-none fw-semibold text-dark" style="border: none; border-radius: 50px;"
+                       placeholder="Password" required name="password">
+            </div>
+
+            <div class="d-grid gap-2 col-6 mx-auto mb-3">
+                <button type="submit" class="btn btn-primary rounded-pill py-2 fw-bold"
+                        style="background-color: #DB6982; border: none;">
+                    Đăng nhập
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center mb-3">
+            <a href="#" class="text-decoration-none fw-semibold" style="color: #DB6982;">Quên mật khẩu</a>
+        </div>
+
+        <p class="text-center text-secondary mb-3">Or sign in with social platforms</p>
+
+        <div class="d-flex justify-content-center gap-3">
+            <button class="btn btn-white border rounded-circle d-flex justify-content-center align-items-center social-icon-btn">
+                <i class="fa-brands fa-facebook-f text-dark"></i>
+            </button>
+            <button class="btn btn-white border rounded-circle d-flex justify-content-center align-items-center social-icon-btn">
+                <i class="fa-brands fa-google text-dark"></i>
+            </button>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

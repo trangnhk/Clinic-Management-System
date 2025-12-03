@@ -1,3 +1,5 @@
+import hashlib
+
 from clinicsystem import app, db
 from sqlalchemy import Column, String, Integer, DateTime, Enum, ForeignKey, DECIMAL, Float
 from sqlalchemy.orm import relationship, mapped_column
@@ -6,6 +8,7 @@ from enum import Enum as RoleEnum
 from datetime import datetime
 from decimal import Decimal
 from flask_login import UserMixin
+import uuid
 
 class UserRole(RoleEnum):
     PATIENT = 1
@@ -18,15 +21,16 @@ class UserGender(RoleEnum):
 class User(db.Model, UserMixin):
     # __abstract__ = True
 
-    id = Column(String(30), unique=True, primary_key=True, nullable=False)
+    id = Column(String(40), unique=True, primary_key=True, nullable=False, default=lambda: str(uuid.uuid4()))
     fullname = Column(String(50), nullable=False)
     username = Column(String(30), unique=True, nullable=False)
-    password = Column(String(30), nullable=False)
+    password = Column(String(100), nullable=False)
     phone_number = Column(String(10), nullable=False, unique=True)
     dob = Column(DateTime, nullable=False)
     gender = Column(Enum(UserGender), nullable=False)
     address = Column(String(100), default="Ho Chi Minh City")
     role = Column(Enum(UserRole), default=UserRole.PATIENT)
+    avatar = Column(String(150), nullable=True, default="https://res.cloudinary.com/dxfbpkmen/image/upload/v1764768698/profile_efyd9k.png")
 
     def __str__(self):
         return self.fullname
@@ -321,3 +325,19 @@ class Allergy(db.Model):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        # Create admin user
+        admin = Administrator(
+            id="Admin0001",  # Generate a unique ID
+            fullname="Admin User",
+            username="admin2",
+            password=hashlib.md5("123".encode("utf-8")).hexdigest(),  # You may want to hash this
+            phone_number="0123456788",
+            dob=datetime(1990, 1, 1),
+            gender=UserGender.MALE,
+            role=UserRole.EMPLOYEE
+        )
+
+        db.session.add(admin)
+        db.session.commit()
+
+        print("Admin user added successfully!")

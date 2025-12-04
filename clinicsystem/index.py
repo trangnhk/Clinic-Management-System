@@ -47,9 +47,16 @@ def register_user():
     if request.method.__eq__('POST'):
         password = request.form.get('password')
         confirm = request.form.get('confirm')
+        username = request.form.get('username')
+        phone = request.form.get('phone_number')
 
+        # 1. CHECK PASSWORD
         if not password.__eq__(confirm):
             err_msg = 'Mật khẩu không khớp!'
+        elif dao.get_user_by_username(username):
+            err_msg = 'Username đã tồn tại!'
+        elif dao.get_user_by_phone(phone):
+            err_msg = 'SDT đã tồn tại!'
         else:
             data = request.form.copy()
             del data['confirm']
@@ -61,6 +68,7 @@ def register_user():
                 file_path = res['secure_url']
 
             try:
+
                 dao.add_user(avatar=file_path, **data, dob=datetime(2005, 8, 30))
                 return redirect('/login')
             except:

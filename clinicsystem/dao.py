@@ -18,9 +18,15 @@ def auth_account(username, password, role=None):
 
     return u.first()
 
-
 def get_user_id(user_id):
     return db.session.get(User, user_id)
+
+def get_user_by_username(username):
+     return User.query.filter_by(username=username).first()
+
+def get_user_by_phone(phone_number):
+     return User.query.filter_by(phone_number=phone_number).first()
+
 
 def add_user(fullname, username, password, phone_number, dob=None, gender=None, avatar = None):
     password = hashlib.md5(password.encode('utf-8')).hexdigest()

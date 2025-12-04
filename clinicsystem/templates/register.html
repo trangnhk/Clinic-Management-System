@@ -7,6 +7,11 @@
     <div class="login-wrapper w-100" style="max-width: 400px;">
 
         <h2 class="text-center fw-bold mb-4" style="color: #CC5063">Đăng ký</h2>
+        {% if err_msg %}
+        <div class="alert alert-danger">
+            {{ err_msg }}
+        </div>
+        {% endif %}
         <form method="POST" enctype="multipart/form-data">
             <div class="input-group mb-3 rounded-pill bg-light-gray px-3 py-2 align-items-center"
                  style="border: 2px solid #DBCECE;">
@@ -59,10 +64,10 @@
             </div>
 
 
-
             <div class="mb-3">
                 <label for="avatar" class="form-label">Upload your avatar</label>
-                <input class="form-control form-control-sm" id="avatar" type="file" name="avatar" placeholder="Your avatar">
+                <input class="form-control form-control-sm" id="avatar" type="file" name="avatar"
+                       placeholder="Your avatar">
             </div>
 
             <div class="d-grid gap-2 col-6 mx-auto mb-3">

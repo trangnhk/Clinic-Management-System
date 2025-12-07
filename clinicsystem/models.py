@@ -21,7 +21,7 @@ class UserGender(RoleEnum):
 class User(db.Model, UserMixin):
     # __abstract__ = True
 
-    id = Column(String(40), unique=True, primary_key=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    id = Column(String(40), unique=True, primary_key=True, nullable=False)
     fullname = Column(String(50), nullable=False)
     username = Column(String(30), unique=True, nullable=False)
     password = Column(String(100), nullable=False)
@@ -34,6 +34,15 @@ class User(db.Model, UserMixin):
 
     def __str__(self):
         return self.fullname
+
+    def update_password(self, new_password: str):
+        self.password = hashlib.md5(new_password.encode('utf-8')).hexdigest()
+        try:
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            return False
 
 class Patient(User):
     medical_id = Column(String(30))
@@ -69,11 +78,21 @@ class Nurse(Employee):
     # One-to-many with ExaminationList
     examinations = relationship('ExaminationList', backref='nurse', lazy=True)
 
+    def __init__(self, *args, **kwargs):
+        from clinicsystem import dao
+        kwargs["id"] = dao.generate_role_id("nurse", Nurse)
+        super().__init__(*args, **kwargs)
+
 class Doctor(Employee):
     specialist = Column(String(50), nullable=False, default="General Practitioner") # default: Bsi da khoa
 
     # One-to-many with Prescription
     prescrips = relationship('Prescription', backref='doctor', lazy=True)
+
+    def __init__(self, *args, **kwargs):
+        from clinicsystem import dao
+        kwargs["id"] = dao.generate_role_id("doctor", Doctor)
+        super().__init__(*args, **kwargs)
 
     # def get_examination_list(self):
     #     pass
@@ -87,6 +106,11 @@ class Doctor(Employee):
 class Cashier(Employee):
     # One-to-many with Bill
     bills = relationship('Bill', backref='cashier', lazy=True)
+
+    def __init__(self, *args, **kwargs):
+        from clinicsystem import dao
+        kwargs["id"] = dao.generate_role_id("cashier", Cashier)
+        super().__init__(*args, **kwargs)
 
 class Policy(db.Model):
     id = Column(Integer, unique=True, nullable=False, primary_key=True)
@@ -112,7 +136,12 @@ class Policy(db.Model):
         return self.number
 
 class Administrator(Employee):
-    pass
+
+    def __init__(self, *args, **kwargs):
+        from clinicsystem import dao
+        kwargs["id"] = dao.generate_role_id("admin", Administrator)
+        super().__init__(*args, **kwargs)
+
     # def change_policy(self, policy_name: str = None, policy_id: int = None, new_number: float = None) -> bool:
     #     policy = Policy.query.get(policy_id)
     #     if not policy:
@@ -145,10 +174,14 @@ class Administrator(Employee):
     # def get_medicine_report(self, month, year) -> []:
     #     pass
 
+class ExaminationStatus(RoleEnum):
+    UNSUBMITTED = 1
+    SUBMIITED = 2
 
 class ExaminationList(db.Model):
     id = Column(Integer, primary_key=True, unique=True, nullable=False)
     date = Column(DateTime, nullable=False, default=datetime.now, unique=True)
+    status = Column(Enum(ExaminationStatus), nullable=False, default=ExaminationStatus.UNSUBMITTED)
 
     # One-to-many with Appointment
     appointments = relationship('Appointment', backref='examinationList', lazy=True)
@@ -156,6 +189,23 @@ class ExaminationList(db.Model):
     # Many-to-One with Nurse
     nurse_id = Column(String(30), ForeignKey(Nurse.id), nullable=False)
 
+    def count_patient(self):
+        return len(self.appointments)
+
+    def is_full(self):
+        return self.count_patients() >= 40
+
+    def add_patient(self, patient: Patient):
+        pass
+
+    def remove_patient(self, patient_id: str, reason: str):
+        pass
+
+    def reoder_number(self):
+        pass
+
+    def confirm_list(self):
+        pass
     # def is_successfully_add_patient(self, patient: Patient) -> bool:
     #     pass
     #
@@ -325,19 +375,3 @@ class Allergy(db.Model):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        # Create admin user
-        admin = Administrator(
-            id="Admin0001",  # Generate a unique ID
-            fullname="Admin User",
-            username="admin2",
-            password=hashlib.md5("123".encode("utf-8")).hexdigest(),  # You may want to hash this
-            phone_number="0123456788",
-            dob=datetime(1990, 1, 1),
-            gender=UserGender.MALE,
-            role=UserRole.EMPLOYEE
-        )
-
-        db.session.add(admin)
-        db.session.commit()
-
-        print("Admin user added successfully!")

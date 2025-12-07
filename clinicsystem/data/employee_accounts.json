@@ -1,0 +1,86 @@
+{
+  "employees": [
+    {
+      "role": "NURSE",
+      "fullname": "Nurse One",
+      "username": "nurse01",
+      "password": "123",
+      "phone_number": "0981112222",
+      "dob": "1998-02-20",
+      "gender": "FEMALE",
+      "avatar": ""
+    },
+    {
+      "role": "NURSE",
+      "fullname": "Nurse Two",
+      "username": "nurse02",
+      "password": "123",
+      "phone_number": "0983334444",
+      "dob": "1996-10-12",
+      "gender": "MALE",
+      "avatar": ""
+    },
+    {
+      "role": "DOCTOR",
+      "fullname": "Doctor One",
+      "username": "doctor01",
+      "password": "123",
+      "phone_number": "0911234567",
+      "dob": "1988-07-15",
+      "gender": "MALE",
+      "specialist": "Cardiology",
+      "avatar": ""
+    },
+    {
+      "role": "DOCTOR",
+      "fullname": "Doctor Two",
+      "username": "doctor02",
+      "password": "123",
+      "phone_number": "0917654321",
+      "dob": "1990-04-11",
+      "gender": "FEMALE",
+      "specialist": "Pediatrics",
+      "avatar": ""
+    },
+    {
+      "role": "CASHIER",
+      "fullname": "Cashier One",
+      "username": "cashier01",
+      "password": "123",
+      "phone_number": "0971110000",
+      "dob": "1995-09-10",
+      "gender": "FEMALE",
+      "avatar": ""
+    },
+    {
+      "role": "CASHIER",
+      "fullname": "Cashier Two",
+      "username": "cashier02",
+      "password": "123",
+      "phone_number": "0972220000",
+      "dob": "1993-05-03",
+      "gender": "MALE",
+      "avatar": ""
+    },
+    {
+      "role": "ADMIN",
+      "fullname": "Admin One",
+      "username": "admin01",
+      "password": "123",
+      "phone_number": "0909998888",
+      "dob": "1985-01-01",
+      "gender": "MALE",
+      "avatar": ""
+    },
+    {
+      "role": "ADMIN",
+      "fullname": "Admin Two",
+      "username": "admin02",
+      "password": "123",
+      "phone_number": "0907776666",
+      "dob": "1987-03-08",
+      "gender": "FEMALE",
+      "avatar": ""
+    }
+  ]
+}

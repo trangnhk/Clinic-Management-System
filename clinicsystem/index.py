@@ -1,6 +1,6 @@
 import cloudinary.uploader
 from flask import render_template, request, redirect
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 from clinicsystem import app, dao, login, db
 from datetime import datetime
 
@@ -126,9 +126,30 @@ def logout_my_user():
     logout_user()
     return redirect('/login')
 
+# NURSE
 @app.route('/nurse')
-def index_nurse():
-    return render_template('nurse/home_info.html')
+@login_required
+def nurse_home_info():
+    return render_template('home_info.html', user=current_user, role="nurse")
+
+# DOCTOR
+@app.route('/doctor')
+@login_required
+def nurse_home_info():
+    return render_template('home_info.html', user=current_user, role="doctor")
+
+# CASHIER
+@app.route('/cashier')
+@login_required
+def nurse_home_info():
+    return render_template('home_info.html', user=current_user, role="cashier")
+
+# ADMIN
+@app.route('/admin')
+@login_required
+def nurse_home_info():
+    return render_template('home_info.html', user=current_user, role="admin")
+
 
 
 if __name__ == "__main__":

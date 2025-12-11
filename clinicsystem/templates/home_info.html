@@ -1,0 +1,38 @@
+{% if role == "nurse" %}
+    {% extends 'nurse/layout/base.html' %}
+{% elif role == "doctor" %}
+    {% extends 'doctor/layout/base.html' %}
+{% elif role == "cashier" %}
+    {% extends 'cashier/layout/base.html' %}
+{% elif role == "admin" %}
+    {% extends 'admin/layout/base.html' %}
+{% endif %}
+
+{% block content %}
+
+
+
+{% if current_user.is_authenticated: %}
+<div class="container d-flex justify-content-center align-items-center h-75">
+    <div class="d-flex align-items-center bg-white p-4 shadow rounded ">
+        <div class="me-5">
+            <img src="{{ current_user.avatar }}" class="rounded" alt="..." width="300">
+        </div>
+        <div>
+            <h2 class="fw-bold mb-2 me-3" style="color:#DB6982;">
+                {{ user.fullname}}
+            </h2>
+            <p class="mb-1"><strong>ID: </strong>{{ user.id }}</p>
+            <p class="mb-1"><strong>Date of birth: </strong>{{ user.dob.strftime("%d/%m/%Y") }}</p>
+            <p class="mb-1"><strong>Gender: </strong>{{ user.gender.name }}</p>
+
+
+        </div>
+    </div>
+
+
+</div>
+{% endif %}
+
+
+{% endblock %}

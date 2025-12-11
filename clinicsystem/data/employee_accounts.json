@@ -8,7 +8,7 @@
       "phone_number": "0981112222",
       "dob": "1998-02-20",
       "gender": "FEMALE",
-      "avatar": ""
+      "avatar": "https://res.cloudinary.com/dxfbpkmen/image/upload/v1765472918/nurse_qmurvz.png"
     },
     {
       "role": "NURSE",
@@ -18,7 +18,7 @@
       "phone_number": "0983334444",
       "dob": "1996-10-12",
       "gender": "MALE",
-      "avatar": ""
+      "avatar": "https://res.cloudinary.com/dxfbpkmen/image/upload/v1765472918/nurse_qmurvz.png"
     },
     {
       "role": "DOCTOR",
@@ -29,7 +29,7 @@
       "dob": "1988-07-15",
       "gender": "MALE",
       "specialist": "Cardiology",
-      "avatar": ""
+      "avatar": "https://res.cloudinary.com/dxfbpkmen/image/upload/v1765475982/doctor_1_w1wqe4.png"
     },
     {
       "role": "DOCTOR",
@@ -40,7 +40,7 @@
       "dob": "1990-04-11",
       "gender": "FEMALE",
       "specialist": "Pediatrics",
-      "avatar": ""
+      "avatar": "https://res.cloudinary.com/dxfbpkmen/image/upload/v1765475982/doctor_1_w1wqe4.png"
     },
     {
       "role": "CASHIER",
@@ -50,7 +50,7 @@
       "phone_number": "0971110000",
       "dob": "1995-09-10",
       "gender": "FEMALE",
-      "avatar": ""
+      "avatar": "https://res.cloudinary.com/dxfbpkmen/image/upload/v1765476182/cashier_iyzzhn.png"
     },
     {
       "role": "CASHIER",
@@ -60,7 +60,7 @@
       "phone_number": "0972220000",
       "dob": "1993-05-03",
       "gender": "MALE",
-      "avatar": ""
+      "avatar": "https://res.cloudinary.com/dxfbpkmen/image/upload/v1765476182/cashier_iyzzhn.png"
     },
     {
       "role": "ADMIN",
@@ -70,7 +70,7 @@
       "phone_number": "0909998888",
       "dob": "1985-01-01",
       "gender": "MALE",
-      "avatar": ""
+      "avatar": "https://res.cloudinary.com/dxfbpkmen/image/upload/v1765476183/setting_gjan84.png"
     },
     {
       "role": "ADMIN",
@@ -80,7 +80,7 @@
       "phone_number": "0907776666",
       "dob": "1987-03-08",
       "gender": "FEMALE",
-      "avatar": ""
+      "avatar": "https://res.cloudinary.com/dxfbpkmen/image/upload/v1765476183/setting_gjan84.png"
     }
   ]
 }

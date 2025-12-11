@@ -98,9 +98,10 @@ def register_user():
             data = {
                 "username": request.form.get("username"),
                 "password": request.form.get("password"),
-                "full_name": request.form.get("full_name"),
+                "fullname": request.form.get("fullname"),
                 "phone_number": request.form.get("phone_number"),
-                "email": request.form.get("email")
+                "gender": request.form.get("gender"),
+                "dob": request.form.get("dob")
             }
             avatar = request.files.get('avatar')
             file_path = None
@@ -111,7 +112,7 @@ def register_user():
 
             try:
 
-                dao.add_user(avatar=file_path, **data, dob=datetime(2005, 8, 30))
+                dao.add_user(avatar=file_path, **data)
                 return redirect('/login')
             except:
                 db.session.rollback()

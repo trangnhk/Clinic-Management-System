@@ -57,14 +57,11 @@ class Patient(User):
     # One-to-Many with Allergy
     allergies = relationship('Allergy', backref='patient', lazy=True)
 
-    def __init__(self, fullname, phone_number, dob, gender, address="Ho Chi Minh City"):
-        self.fullname = fullname
-        self.phone_number = phone_number
-        self.dob = dob
-        self.gender = gender
-        self.address = address
-        self.username = phone_number
-        self.password = "123456"
+    def __init__(self, *args, **kwargs):
+        from clinicsystem import dao
+        kwargs["id"] = dao.generate_role_id("patient", Patient)
+        kwargs["medical_id"] = f"MED-{kwargs['id']}"
+        super().__init__(*args, **kwargs)
 
 
 class Employee(User):

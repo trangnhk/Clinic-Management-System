@@ -68,7 +68,15 @@ def get_user_by_phone(phone_number):
 def add_user(fullname, username, password, phone_number, dob=None, gender=None, avatar = None):
     password = hashlib.md5(password.encode('utf-8')).hexdigest()
 
-    u = User(fullname=fullname,
+    if isinstance(dob, str):
+        dob = datetime.strptime(dob, "%Y-%m-%d").date()
+
+    if isinstance(gender, str):
+        gender = UserGender.MALE if gender.upper() == "MALE" else UserGender.FEMALE
+
+
+
+    u = Patient(fullname=fullname,
              username=username,
              password=password,
              phone_number=phone_number,
@@ -76,10 +84,10 @@ def add_user(fullname, username, password, phone_number, dob=None, gender=None, 
              gender=gender,
              avatar=avatar)
 
-    if avatar:
-        res = cloudinary.uploader.upload(avatar)
-        print(res)
-        u.avatar = res.get("secure_url")
+    # if avatar:
+    #     res = cloudinary.uploader.upload(avatar)
+    #     print(res)
+    #     u.avatar = res.get("secure_url")
 
 
     db.session.add(u)

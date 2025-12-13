@@ -4,6 +4,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from clinicsystem import app, dao, login, db
 from datetime import datetime
 
+from clinicsystem.decorators import anonymous_required
 from clinicsystem.models import Nurse, Doctor, Cashier, Administrator, Patient
 
 
@@ -39,19 +40,18 @@ def load_user(user_id):
         or Administrator.query.get(user_id)
     )
 
+ROLE_REDIRECT = {
+    "Nurse": "/nurse",
+    "Doctor": "/doctor",
+    "Cashier": "/cashier",
+    "Administrator": "/admin"
+}
+
 @app.route("/login", methods=['get', 'post'])
+@anonymous_required
 def login_my_user():
 
-    if current_user.is_authenticated:
-        if isinstance(current_user, Nurse):
-            return redirect("/nurse")
-        elif isinstance(current_user, Doctor):
-            return redirect("/doctor")
-        elif isinstance(current_user, Cashier):
-            return redirect("/cashier")
-        elif isinstance(current_user, Administrator):
-            return redirect("/admin")
-        return redirect("/")
+    err_msg = None
 
     if request.method.__eq__("POST"):
         username = request.form.get("username")
@@ -61,21 +61,11 @@ def login_my_user():
 
         if user:
             login_user(user)
-
-            if isinstance(user, Nurse):
-                return redirect("/nurse")
-            elif isinstance(user, Doctor):
-                return redirect("/doctor")
-            elif isinstance(user, Cashier):
-                return redirect("/cashier")
-            elif isinstance(user, Administrator):
-                return redirect("/admin")
-
             next = request.args.get('next')
-            return redirect(next if next else '/')
+            return redirect(next if next else ROLE_REDIRECT.get(user.__class__.__name__, "/"))
             # return redirect("/")
-
-    return render_template("login.html")
+        err_msg = "USERNAME HOẶC PASSWORD SAI!"
+    return render_template("login.html", err_msg=err_msg)
 
 # REGISTER
 @app.route("/register", methods=['GET', 'POST'])
@@ -135,19 +125,19 @@ def nurse_home_info():
 # DOCTOR
 @app.route('/doctor')
 @login_required
-def nurse_home_info():
+def doctor_home_info():
     return render_template('home_info.html', user=current_user, role="doctor")
 
 # CASHIER
 @app.route('/cashier')
 @login_required
-def nurse_home_info():
+def cashier_home_info():
     return render_template('home_info.html', user=current_user, role="cashier")
 
 # ADMIN
 @app.route('/admin')
 @login_required
-def nurse_home_info():
+def admin_home_info():
     return render_template('home_info.html', user=current_user, role="admin")
 
 

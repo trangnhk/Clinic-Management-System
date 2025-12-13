@@ -1,7 +1,56 @@
-.navbar .nav-link{
-    font-size: 18px !important;
+/*LOGIN*/
+
+.login-wrapper{
+    max-width: 420px;
 }
 
-.navbar .nav-link {
-    font-weight: 500 !important;
+.login-wrapper h2{
+    color: #CC5063;
+    font-size: 32px;
 }
+
+.login-wrapper .input-group {
+    border: 2px solid #DBCECE !important;
+}
+
+.login-wrapper .input-group {
+    border-radius: 999px;
+    padding: 14px 22px;
+    background-color: transparent;
+}
+
+.login-wrapper .form-control {
+    border: none;
+    border-radius: 50px;
+}
+
+.login-wrapper .btn-primary {
+    background-color: #DB6982 !important;
+    border: none;
+}
+
+.login-wrapper a {
+    font-size: 15px;
+    color: #DB6982 !important;
+}
+
+.navbar {
+    background-color: #FFBFCE !important;
+    font-size: 18px;
+}
+
+.navbar-brand img {
+    object-fit: contain;
+}
+
+.navbar .nav-link{
+    color: #333 !important;
+}
+
+.navbar .form-control {
+    border-radius: 999px;
+    padding: 6px 14px;
+    border: 1px solid #ddd;
+    box-shadow: none;
+}
+

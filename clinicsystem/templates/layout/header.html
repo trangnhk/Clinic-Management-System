@@ -24,31 +24,25 @@
                 {%endfor%}
                 {% if current_user.is_authenticated: %}
                 <li class="nav-item">
-                    <a class="nav-link active" href="/login" tabindex="-1" style="font-size: 16px;">
+                    <a class="nav-link active" href="/login" tabindex="-1">
                         <img src="{{ current_user.avatar }}" width="35">
                         Hi , {{current_user.username}} !</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="/logout" tabindex="-1" style="font-size: 12px;">Logout</a>
+                    <a class="nav-link active" href="/logout" tabindex="-1">Logout</a>
                 </li>
 
                 {% else %}
                 <li class="nav-item">
-                    <a class="nav-link active" href="/login" tabindex="-1" style="font-size: 18px;">Login</a>
+                    <a class="nav-link active" href="/login" tabindex="-1">Login</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="/register" tabindex="-1" style="font-size: 18px;">Register</a>
+                    <a class="nav-link active" href="/register" tabindex="-1">Register</a>
                 </li>
                 {% endif %}
 
 
             </ul>
-            <form class="d-flex" method="get">
-                <input class="form-control me-2" type="text" placeholder="Search..." aria-label="Search" name="q">
-                <button class="btn btn-outline-success" type="submit" style="background-color: #009900; color: white;">
-                    Search
-                </button>
-            </form>
         </div>
     </div>
 </nav>

@@ -1,0 +1,104 @@
+{% extends 'nurse/layout/base.html' %}
+
+{% block title %}Thêm bệnh nhân{%endblock%}
+
+{%block content%}
+
+<div class="container d-flex justify-content-center align-items-center min-vh-75">
+    <div class="card shadow-lg p-5 rounded-4 add-patient-card">
+        <h1 class="text-center fw-bold mb-3">THÊM BỆNH NHÂN</h1>
+
+
+        <!FORM>
+        <form method="post">
+
+            <input type="hidden" name="next" value="{{ request.args.get('next') or '' }}">
+            <div class="d-flex justify-content-center align-items-center">
+                <label style="padding: 20px; font-size:18px;">Ngày khám bệnh:</label>
+                <div class="input-group mb-3 rounded-pill bg-light-gray px-0 py-0"
+                     style="max-width: 150px;">
+                    <span class="text-secondary border-0 bg-transparent"></span>
+                    <input type="date"
+                           class="form-control bg-transparent shadow-none fw-semibold text-dark text-center"
+                           name="exam_date"
+                           id="exam-date"
+                           required>
+                </div>
+            </div>
+            <div class="row">
+                <!LEFT>
+                <div class="col-md-6">
+                    <div class="form-row">
+                        <label>Họ và tên: </label>
+                        <input type="text" name="fullname" class="input-group rounded-pill" placeholder="Nguyen Van A"
+                               required>
+                    </div>
+
+                    <div class="form-row">
+                        <label>BHYT: </label>
+                        <input type="text" name="medical_id" class="input-group rounded-pill"
+                               placeholder="GD0000000001">
+                    </div>
+
+                    <div class="form-row">
+                        <label>Số điện thoại: </label>
+                        <input type="text" name="phone_number" class="input-group rounded-pill" placeholder="0987654321"
+                               required>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Địa chỉ: </label>
+                        <input type="text" name="address" class="input-group rounded-pill"
+                               placeholder="123 abc, xyz, TpHCM">
+                    </div>
+                </div>
+
+
+                <!RIGHT>
+                <div class="col-md-6">
+                    <div class="form-row">
+                        <label>Giới tính: </label>
+                        <div class="d-flex gap-3">
+                            <label style="font-weight: 600"><input type="radio" name="gender" value="MALE">Male</label>
+                            <label style="font-weight: 600"><input type="radio" name="gender" value="FEMALE" checked>Female</label>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Ngày sinh: </label>
+                        <input type="date" name="dob" class="input-group rounded-pill">
+                    </div>
+
+                    <div class="form-row">
+                        <label>Dị ứng: </label>
+                        <label style="font-weight: 600">Có: <input type="radio" name="allergy" id="has-allergy"></label>
+                        <label style="font-weight: 600">Không: <input type="radio" name="allergy"
+                                                                      id="has-no-allergy" checked></label>
+
+
+                    </div>
+                    <div class="mt-2" id="allergy-box" style="display: none;">
+                        {% for m in medicines %}
+                        <label class="d-block">
+                            <input type="checkbox" name="medicine_allergy_ids" value="{{ m.id }}">
+                            {{ m.name }}
+                        </label>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary rounded-pill py-2 fw-bold" style="font-size: 20px;">
+                    <i class="fa-solid fa-check fw-bold"></i> Submit
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/addpatient.js') }}"></script>
+{% endblock %}

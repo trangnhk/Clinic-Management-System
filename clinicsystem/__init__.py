@@ -16,3 +16,7 @@ cloudinary.config(cloud_name='dxfbpkmen',
 
 login = LoginManager(app)
 db = SQLAlchemy(app)
+
+
+from clinicsystem.nurse.routes import nurse_page
+app.register_blueprint(nurse_page)

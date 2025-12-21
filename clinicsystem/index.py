@@ -7,7 +7,6 @@ from datetime import datetime
 from clinicsystem.decorators import anonymous_required
 from clinicsystem.models import Nurse, Doctor, Cashier, Administrator, Patient
 
-
 # INDEX
 @app.route("/")
 def index():
@@ -116,11 +115,61 @@ def logout_my_user():
     logout_user()
     return redirect('/login')
 
-# NURSE
-@app.route('/nurse')
+
+
+# PATIENT
+@app.route('/appointment-ticket', methods=['get'])
 @login_required
-def nurse_home_info():
-    return render_template('home_info.html', user=current_user, role="nurse")
+def get_appointment_ticket():
+    aps = dao.get_appointment(patient_id=current_user.id, date=None)
+    print(aps)
+    return render_template("appointment_ticket.html", aps=aps)
+
+
+@app.route('/online-appointment', methods=["get", "post"])
+def create_online_appointment():
+    if request.method == "GET":
+        exam_date = request.args.get("exam_date")
+        return render_template("patient/appointment.html", exam_date=exam_date, medicines=dao.load_medicines(),user=current_user,role="nurse")
+
+    data = request.form
+
+    # get exam date & url
+    exam_date_str = request.form.get("exam_date")
+    exam_date = datetime.strptime(exam_date_str, "%Y-%m-%d")
+    print(exam_date)
+
+
+    # get/create examination list
+    exam_list = dao.get_examinationlist_by_date(exam_date)
+    # if not exam_list:
+    #     exam_list = dao.create_examination_list(exam_date, current_user.id)
+
+
+    # get/create patient
+    patient = dao.get_or_create_patient(
+        fullname=data.get("fullname"),
+        medical_id=data.get("medical_id"),
+        phone_number=data.get("phone_number"),
+        dob=data.get("dob"),
+        gender=data.get("gender"),
+        address=data.get("address"),
+
+    )
+
+    # has patient yet?
+    dao.add_patient_to_exam_list(exam_date, exam_list, patient)
+
+    # allergy
+    allergy_ids = data.getlist("medicine_allergy_ids")
+    if allergy_ids:
+        dao.add_patient_allergies(patient.id, allergy_ids)
+
+    ap_id = str (dao.get_appointment(exam_date, patient_id=patient.id))
+    return render_template('appointment_ticket.html', ap_id=ap_id)
+
+
+
 
 # DOCTOR
 @app.route('/doctor')
@@ -143,5 +192,6 @@ def admin_home_info():
 
 
 if __name__ == "__main__":
+    # app.register_blueprint()
     with app.app_context():
         app.run(debug=True)

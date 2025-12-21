@@ -13,7 +13,8 @@
   },
   {
     "id": 4,
-    "name": "Đặt lịch hẹn"
+    "name": "Đặt lịch hẹn",
+    "url": "/online-appointment"
   }
 
 ]

@@ -1,0 +1,24 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Đặt lịch hẹn{%endblock%}
+
+{% block content %}
+
+{% for ap in aps %}
+<div class="container d-flex justify-content-center align-items-center min-vh-75">
+    <div class="card shadow-lg p-5 rounded-4 add-patient-card">
+        <h1 class="text-center fw-bold mb-3">PHIẾU HẸN KHÁM BỆNH</h1>
+
+        <div class="primary-text mb-3 text-center" style="color: #CC5063">Mã phiếu hẹn: {{ap.id}}</div>
+        <h5 class="mb-3 fw-bold text-center">Trạng thái: {{ap.status.name}}</h5>
+    </div>
+
+</div>
+
+{% endfor %}
+
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

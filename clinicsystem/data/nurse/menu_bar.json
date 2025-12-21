@@ -1,15 +1,18 @@
 [
   {
     "id": 1,
-    "name": "Thông tin y tá"
+    "name": "Thông tin y tá",
+    "url": "/nurse"
   },
   {
     "id": 2,
-    "name": "Lập danh sách khám"
+    "name": "Lập danh sách khám",
+    "url": "/nurse/examination-list"
   },
   {
     "id": 3,
-    "name": "Thêm bệnh nhân"
+    "name": "Thêm bệnh nhân",
+    "url": "/nurse/add-patient"
   }
 
 ]

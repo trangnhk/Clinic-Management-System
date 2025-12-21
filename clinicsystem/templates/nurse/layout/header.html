@@ -16,23 +16,21 @@
                 </li>
                 {%for m in menu_bar%}
                 <li class="nav-item">
-                    {% if m.id ==1 %}
-                    <a class="nav-link" href="/nurse">{{m.name}}</a>
-                    {% else %}
-                    <a class="nav-link" href="/nurse/?menu_bar_id={{m.id}}">{{m.name}}</a>
-                    {% endif %}
+                    <a class="nav-link" href="{{m.url}}">{{m.name}}</a>
                 </li>
                 {%endfor%}
+            </ul>
+            <ul class="navbar-nav ms-auto d-flex flex-row align-items-center">
                 {% if current_user.is_authenticated: %}
-                <li class="nav-item">
-                    <a class="nav-link active" href="/login" tabindex="-1">
-                        <img src="{{ current_user.avatar }}" width="20">
-                        Hi , {{current_user.username}} !</a>
-                </li>
+
                 <li class="nav-item">
                     <a class="nav-link active" href="/logout" tabindex="-1">Logout</a>
                 </li>
-
+                <li class="nav-item">
+                    <a class="nav-link active d-flex align-items-center flex-row-reverse" href="/login" tabindex="-1">
+                        <img src="{{ current_user.avatar }}" width="35">
+                        Hi , {{current_user.username}} !</a>
+                </li>
                 {% else %}
                 <li class="nav-item">
                     <a class="nav-link active" href="/login" tabindex="-1">Login</a>

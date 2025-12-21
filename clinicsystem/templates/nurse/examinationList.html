@@ -3,7 +3,82 @@
 {% block title %}Lập danh sách khám{%endblock%}
 
 {%block content%}
-<h1 class="text-center"></h1>
+<h1 class="text-center fw-bold mb-4">LẬP DANH SÁCH KHÁM</h1>
 
+<div class="d-flex justify-content-center align-items-center fw-bold">
+    <label style="padding: 20px; font-size:18px;">NGÀY KHÁM BỆNH:</label>
+    <div class="input-group mb-3 rounded-pill bg-light-gray px-0 py-0"
+         style="max-width: 150px;">
+        <span class="text-secondary border-0 bg-transparent"></span>
+        <input type="date"
+               class="form-control bg-transparent shadow-none fw-semibold text-dark text-center"
+               required name="date-of-examination">
+    </div>
+    <h5 class="text-center mt-3">
+        <span id="exam-status" class="fw-bold text-danger" style="padding: 10px 20px;">UNSUBMITTED</span>
+    </h5>
+</div>
+
+<table class="table text-center">
+    <thead>
+    <tr>
+        <th>STT</th>
+        <th>ID Bệnh nhân</th>
+        <th>Họ và tên</th>
+        <th>BHYT</th>
+        <th>Ngày sinh</th>
+        <th>Số điện thoại</th>
+        <th>Địa chỉ</th>
+        <th>Xóa?</th>
+    </tr>
+    </thead>
+    <tbody id="exam-body">
+    <tr id="empty-row">
+        <td colspan="8" class="text-muted text-center">
+            Chưa có danh sách khám cho ngày này
+        </td>
+    </tr>
+
+    </tbody>
+</table>
+
+
+<div class="d-flex justify-content-between align-items-center mt-4">
+    <a id="add-patient-link"
+       href="/nurse/add-patient?exam_date=&next=/examination-list?date="
+       class="btn btn-primary rounded-pill fw-bold px-4 py-2">
+        Thêm bệnh nhân
+    </a>
+
+    <h5 id="total-count">Tổng cộng: 0</h5>
+</div>
+
+
+<div class="d-flex justify-content-end mt-4">
+    <button type="submit" class="btn btn-primary rounded-pill py-2 fw-bold" style="font-size: 20px;">
+        <i class="fa-solid fa-check fw-bold"></i>
+        SUBMIT
+    </button>
+</div>
+
+
+<template id="row-template">
+    <tr>
+        <td data-field="col-index"></td>
+        <td data-field="col-patient-id"></td>
+        <td data-field="col-fullname"></td>
+        <td data-field="col-medical-id"></td>
+        <td data-field="col-dob"></td>
+        <td data-field="col-phone"></td>
+        <td data-field="col-address"></td>
+        <td>
+            <button class="btn btn-sm btn-danger btn-remove">Xóa</button>
+        </td>
+    </tr>
+</template>
 
 {%endblock%}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/examinationList.js') }}"></script>
+{% endblock %}

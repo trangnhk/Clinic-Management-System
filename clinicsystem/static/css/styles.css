@@ -1,32 +1,48 @@
 /*LOGIN*/
+.hidden {
+    display: none !important;
+}
 
 .login-wrapper{
     max-width: 420px;
 }
 
-.login-wrapper h2{
+h2{
     color: #CC5063;
     font-size: 32px;
 }
 
-.login-wrapper .input-group {
-    border: 2px solid #DBCECE !important;
+.form-row{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
 }
 
-.login-wrapper .input-group {
+.form-row label{
+    font-size: 18px;
+    min-width: 90px;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+
+.input-group {
+    border: 2px solid #DBCECE !important;
     border-radius: 999px;
     padding: 14px 22px;
     background-color: transparent;
 }
 
-.login-wrapper .form-control {
+.form-control {
     border: none;
     border-radius: 50px;
 }
 
-.login-wrapper .btn-primary {
+.btn-primary {
     background-color: #DB6982 !important;
     border: none;
+    color: white;
 }
 
 .login-wrapper a {
@@ -54,3 +70,16 @@
     box-shadow: none;
 }
 
+h1 {
+    color: #CC5063;
+}
+
+.allergy-box{
+    max-height: 100px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.primary-text{
+    font-size: 14px;
+}

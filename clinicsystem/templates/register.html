@@ -1,84 +1,73 @@
 {% extends 'layout/base.html' %}
 
+{% block title %}Đăng ký{%endblock%}
+
 {% block content %}
 
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
 
     <div class="login-wrapper w-100" style="max-width: 400px;">
 
-        <h2 class="text-center fw-bold mb-4" style="color: #CC5063">Đăng ký</h2>
+        <h2 class="text-center fw-bold mb-4">Đăng ký</h2>
         {% if err_msg %}
         <div class="alert alert-danger">
             {{ err_msg }}
         </div>
         {% endif %}
         <form method="POST" enctype="multipart/form-data">
-            <div class="input-group mb-3 rounded-pill bg-light-gray px-3 py-2 align-items-center"
-                 style="border: 2px solid #DBCECE;">
+            <div class="input-group mb-3 rounded-pill bg-light-gray px-3 py-2 align-items-center">
                     <span class="text-secondary border-0 bg-transparent">
                         <i class="fa-solid fa-user"></i>
                     </span>
                 <input type="text" class="form-control bg-transparent shadow-none fw-semibold text-dark"
-                       style="border: none; border-radius: 50px;"
                        placeholder="Fullname" required name="fullname">
             </div>
 
-            <div class="input-group mb-3 rounded-pill bg-light-gray px-3 py-2 align-items-center"
-                 style="border: 2px solid #DBCECE;">
+            <div class="input-group mb-3 rounded-pill bg-light-gray px-3 py-2 align-items-center">
                     <span class="text-secondary border-0 bg-transparent">
                         <i class="fa-solid fa-user"></i>
                     </span>
                 <input type="text" class="form-control bg-transparent shadow-none fw-semibold text-dark"
-                       style="border: none; border-radius: 50px;"
                        placeholder="Username" required name="username">
             </div>
 
-            <div class="input-group mb-3 rounded-pill bg-light-gray px-3 py-2 align-items-center"
-                 style="border: 2px solid #DBCECE;">
+            <div class="input-group mb-3 rounded-pill bg-light-gray px-3 py-2 align-items-center">
                     <span class="text-secondary border-0 bg-transparent">
                         <i class="fa-solid fa-lock"></i>
                     </span>
                 <input type="password" class="form-control border-0 bg-transparent shadow-none fw-semibold text-dark"
-                       style="border: none; border-radius: 50px;"
                        placeholder="Password" required name="password">
             </div>
 
-            <div class="input-group mb-3 rounded-pill bg-light-gray px-3 py-2 align-items-center"
-                 style="border: 2px solid #DBCECE;">
+            <div class="input-group mb-3 rounded-pill bg-light-gray px-3 py-2 align-items-center">
                     <span class="text-secondary border-0 bg-transparent">
                         <i class="fa-solid fa-lock"></i>
                     </span>
                 <input type="password" class="form-control border-0 bg-transparent shadow-none fw-semibold text-dark"
-                       style="border: none; border-radius: 50px;"
                        placeholder="Confirm password" required name="confirm">
             </div>
 
-            <div class="input-group mb-3 rounded-pill bg-light-gray px-3 py-2 align-items-center"
-                 style="border: 2px solid #DBCECE;">
+            <div class="input-group mb-3 rounded-pill bg-light-gray px-3 py-2 align-items-center">
                     <span class="text-secondary border-0 bg-transparent">
                         <i class="fa-solid fa-lock"></i>
                     </span>
                 <input type="text" class="form-control border-0 bg-transparent shadow-none fw-semibold text-dark"
-                       style="border: none; border-radius: 50px;"
                        placeholder="Phone number" required name="phone_number">
             </div>
-            <div class="input-group mb-3 rounded-pill bg-light-gray px-3 py-2 align-items-center"
-                 style="border: 2px solid #DBCECE;">
+            <div class="input-group mb-3 rounded-pill bg-light-gray px-3 py-2 align-items-center">
                 <span class="text-secondary border-0 bg-transparent">
                 <i class="fa-solid fa-calendar"></i>
                 </span>
                 <input type="date" class="form-control bg-transparent shadow-none fw-semibold text-dark"
-                       style="border: none; border-radius: 50px;"
                        required name="dob">
             </div>
 
-            <div class="input-group mb-3 rounded-pill bg-light-gray px-3 py-2 align-items-center"
-                 style="border: 2px solid #DBCECE;">
+            <div class="input-group mb-3 rounded-pill bg-light-gray px-3 py-2 align-items-center">
         <span class="text-secondary border-0 bg-transparent">
             <i class="fa-solid fa-venus-mars"></i>
         </span>
                 <select class="form-select bg-transparent shadow-none fw-semibold text-dark"
-                        style="border: none; border-radius: 50px; padding-left: 0;"
+                        style="border: none; border-radius: 50px; padding-left: 0.5;"
                         required name="gender">
                     <option value="" disabled selected hidden>Select GENDER</option>
                     <option value="MALE">MALE</option>

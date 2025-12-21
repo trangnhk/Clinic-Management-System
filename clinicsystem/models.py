@@ -1,8 +1,8 @@
 import hashlib
 
-from clinicsystem import app, db
-from sqlalchemy import Column, String, Integer, DateTime, Enum, ForeignKey, DECIMAL, Float
-from sqlalchemy.orm import relationship, mapped_column
+from clinicsystem import db, app
+from sqlalchemy import Column, String, Integer, DateTime, Enum, ForeignKey, DECIMAL, Float, Date
+from sqlalchemy.orm import relationship
 from sqlalchemy import UniqueConstraint
 from enum import Enum as RoleEnum
 from datetime import datetime
@@ -20,13 +20,14 @@ class UserGender(RoleEnum):
 
 class User(db.Model, UserMixin):
     # __abstract__ = True
+    __tablename__ = "users"
 
     id = Column(String(40), unique=True, primary_key=True, nullable=False)
     fullname = Column(String(50), nullable=False)
     username = Column(String(30), unique=True, nullable=False)
     password = Column(String(100), nullable=False)
     phone_number = Column(String(10), nullable=False, unique=True)
-    dob = Column(DateTime, nullable=False)
+    dob = Column(Date, nullable=False)
     gender = Column(Enum(UserGender), nullable=False)
     address = Column(String(100), default="Ho Chi Minh City")
     role = Column(Enum(UserRole), default=UserRole.PATIENT)
@@ -45,8 +46,10 @@ class User(db.Model, UserMixin):
             return False
 
 class Patient(User):
+    __tablename__ = "patient"
+
     medical_id = Column(String(30))
-    id = Column(ForeignKey(User.id), primary_key=True, unique=True, nullable=False)
+    id = Column(String(40), ForeignKey(User.id), primary_key=True, unique=True, nullable=False)
 
     # One-to-Many with Appointment
     appointments = relationship('Appointment', backref='patient', lazy=True)
@@ -60,18 +63,21 @@ class Patient(User):
     def __init__(self, *args, **kwargs):
         from clinicsystem import dao
         kwargs["id"] = dao.generate_role_id("patient", Patient)
-        kwargs["medical_id"] = f"MED-{kwargs['id']}"
+
         super().__init__(*args, **kwargs)
 
 
-class Employee(User):
-    __abstract__ = True
+class EmployeeMixin:
+    # __tablename__ = "employee"
+    # __abstract__ = True
 
-    id = Column(ForeignKey(User.id), primary_key=True, unique=True, nullable=False)
+    # id = Column(String(40), ForeignKey(User.id), primary_key=True, unique=True, nullable=False)
     salary = Column(DECIMAL(10,3), nullable=False, default=5000000.0)
 
 
-class Nurse(Employee):
+class Nurse(User,EmployeeMixin):
+    __tablename__ = "nurse"
+    id = Column(String(40), ForeignKey(User.id), primary_key=True, unique=True, nullable=False)
     # One-to-many with ExaminationList
     examinations = relationship('ExaminationList', backref='nurse', lazy=True)
 
@@ -80,7 +86,10 @@ class Nurse(Employee):
         kwargs["id"] = dao.generate_role_id("nurse", Nurse)
         super().__init__(*args, **kwargs)
 
-class Doctor(Employee):
+class Doctor(User, EmployeeMixin):
+    __tablename__ = "doctor"
+    id = Column(String(40), ForeignKey(User.id), primary_key=True, unique=True, nullable=False)
+
     specialist = Column(String(50), nullable=False, default="General Practitioner") # default: Bsi da khoa
 
     # One-to-many with Prescription
@@ -100,7 +109,9 @@ class Doctor(Employee):
     # def view_medical_history(self):
     #     pass
 
-class Cashier(Employee):
+class Cashier(User, EmployeeMixin):
+    __tablename__ = "cashier"
+    id = Column(String(40), ForeignKey(User.id), primary_key=True, unique=True, nullable=False)
     # One-to-many with Bill
     bills = relationship('Bill', backref='cashier', lazy=True)
 
@@ -132,7 +143,9 @@ class Policy(db.Model):
     def get_number(self, name):
         return self.number
 
-class Administrator(Employee):
+class Administrator(User, EmployeeMixin):
+    __tablename__ = "administrator"
+    id = Column(String(40), ForeignKey(User.id), primary_key=True, unique=True, nullable=False)
 
     def __init__(self, *args, **kwargs):
         from clinicsystem import dao
@@ -177,32 +190,44 @@ class ExaminationStatus(RoleEnum):
 
 class ExaminationList(db.Model):
     id = Column(Integer, primary_key=True, unique=True, nullable=False)
-    date = Column(DateTime, nullable=False, default=datetime.now, unique=True)
+    date = Column(Date, nullable=False, default=datetime.date, unique=True)
     status = Column(Enum(ExaminationStatus), nullable=False, default=ExaminationStatus.UNSUBMITTED)
 
     # One-to-many with Appointment
     appointments = relationship('Appointment', backref='examinationList', lazy=True)
 
     # Many-to-One with Nurse
-    nurse_id = Column(String(30), ForeignKey(Nurse.id), nullable=False)
+    nurse_id = Column(String(30), ForeignKey(Nurse.id), nullable=True)
 
-    def count_patient(self):
-        return len(self.appointments)
+    def max_patients(self):
+        import dao
+        return dao.get_policy_value("MAX_EXAMINATION_PATIENT")
 
     def is_full(self):
-        return self.count_patients() >= 40
+        return len(self.appointments) >= self.max_patients()
 
     def add_patient(self, patient: Patient):
-        pass
+        if self.status != ExaminationStatus.UNSUBMITTED:
+            raise ValueError("Danh sách đã nộp")
 
-    def remove_patient(self, patient_id: str, reason: str):
-        pass
+        if self.is_full():
+            raise ValueError("Danh sách đã đủ số lượng quy định")
 
-    def reoder_number(self):
-        pass
+        number = len(self.appointments) + 1
+        appointment = Appointment(
+            id=str(uuid.uuid4())[:20],
+            number=number,
+            patient_id=patient.id,
+            examination_id=self.id,
+            status=AppointmentStatus.WAITING_EXAMINATION
+        )
+        db.session.add(appointment)
+        db.session.commit()
 
     def confirm_list(self):
-        pass
+        if self.status.__eq__(ExaminationStatus.SUBMIITED):
+            for a in self.appointments:
+                a.update_status(AppointmentStatus.IN_EXAMINATION)
     # def is_successfully_add_patient(self, patient: Patient) -> bool:
     #     pass
     #
@@ -235,8 +260,13 @@ class Appointment(db.Model):
     # Many-to-One with Patient
     patient_id = Column(String(30), ForeignKey(Patient.id), nullable=False)
 
-    __table_agrs__ = (UniqueConstraint("examination_id", "number"))
+    __table_args__ = (UniqueConstraint("examination_id", "number"),)
 
+    def update_status(self, new: AppointmentStatus):
+        self.status = new
+
+    # def __str__(self):
+    #     return self.id
 
 class BillStatus(RoleEnum):
     UNPAID = 1
@@ -370,5 +400,6 @@ class Allergy(db.Model):
     #     return f"DON'T HAVING ANY ALLERGIES"
 
 if __name__ == '__main__':
+    # pass
     with app.app_context():
         db.create_all()

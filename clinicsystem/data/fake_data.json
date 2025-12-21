@@ -1,0 +1,33 @@
+{
+  "patient_data":[
+    {
+      "fullname": "Nguyen Van A",
+      "username": "patient_a",
+      "password": "123456",
+      "phone_number": "0900000001",
+      "dob": "2000-1-1",
+      "gender": "MALE",
+      "address": "Ho Chi Minh City",
+      "medical_id": "HCM000001"
+    },
+    {
+      "fullname": "Tran Thi B",
+      "username": "patient_b",
+      "password": "123456",
+      "phone_number": "0900000002",
+      "dob": "1990-2-2",
+      "gender": "FEMALE",
+      "address": "Hội An"
+    },
+    {
+      "fullname": "Le Van C",
+      "username": "patient_c",
+      "password": "123456",
+      "phone_number": "0900000003",
+      "dob": "1989-12-12",
+      "gender": "MALE",
+      "address": "Cần Thơ",
+      "medical_id": "CTO0000009"
+    }
+  ]
+}

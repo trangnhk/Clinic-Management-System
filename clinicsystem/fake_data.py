@@ -3,7 +3,7 @@ import hashlib
 import uuid
 import random
 from decimal import Decimal
-from clinicsystem import app, db
+from clinicsystem import app, db, dao
 from clinicsystem.models import (
     Patient,
     ExaminationList,
@@ -14,7 +14,7 @@ from clinicsystem.models import (
     Allergy
 )
 from clinicsystem import app
-
+from flask import json
 
 # Hash password helper
 def hash_password(password: str):
@@ -22,54 +22,22 @@ def hash_password(password: str):
 
 
 def create_fake_patients():
-    patients = []
+    with open(f"data/fake_date.json", encoding="utf-8") as f:
+        data = json.load(f)
 
-    patient_data = [
-        {
-            "fullname": "Nguyen Van A",
-            "username": "patient_a",
-            "password": "123456",
-            "phone_number": "0900000001",
-            "dob": datetime(2000, 1, 1),
-            "gender": "MALE",
-            "address": "Ho Chi Minh City"
-        },
-        {
-            "fullname": "Tran Thi B",
-            "username": "patient_b",
-            "password": "123456",
-            "phone_number": "0900000002",
-            "dob": datetime(1998, 5, 12),
-            "gender": "FEMALE",
-            "address": "Hội An"
-        },
-        {
-            "fullname": "Le Van C",
-            "username": "patient_c",
-            "password": "123456",
-            "phone_number": "0900000003",
-            "dob": datetime(1995, 9, 20),
-            "gender": "MALE",
-            "address": "Cần Thơ",
-            "medical_id": "CTO0000009"
-        }
-    ]
+    patients = data.get("patient_data", [])
 
-    for data in patient_data:
-        patient = Patient(
-            fullname=data["fullname"],
-            username=data["username"],
-            password=hash_password(data["password"]),
-            phone_number=data["phone_number"],
-            dob=data["dob"],
+    for patient in patients:
+        dao.add_user(
+            fullname=patient["fullname"],
+            username=patient["username"],
+            password=patient["password"],
+            phone_number=patient["phone_number"],
+            dob=patient["dob"],
             gender=data["gender"],
-            address=data["address"]
+            address=patient["address"],
+            medical_id=patient["medical_id"]
         )
-        db.session.add(patient)
-        patients.append(patient)
-
-    db.session.commit()
-    return patients
 
 
 def create_examination_list(date: datetime):
@@ -196,9 +164,9 @@ def fake_allergies():
     if allergies:
         db.session.add_all(allergies)
         db.session.commit()
-        print(f"✅ Đã tạo {len(allergies)} Allergy")
+        print(f"Đã tạo {len(allergies)} Allergy")
     else:
-        print("ℹ️ Không có Allergy mới")
+        print("Không có Allergy mới")
 
 if __name__ == "__main__":
     with app.app_context():

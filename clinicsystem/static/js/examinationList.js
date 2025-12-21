@@ -103,39 +103,33 @@ function submitList() {
     }).then(() => loadByDate(currentDate));
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const dateInput = document.querySelector("input[name='date-of-examination']");
+const dateInput = document.querySelector("input[name='date-of-examination']");
 
-    // Lấy date từ URL
-    const params = new URLSearchParams(window.location.search);
-    const urlDate = params.get("date");
+// Lấy date từ URL
+const params = new URLSearchParams(window.location.search);
+const urlDate = params.get("date");
 
-    // Ưu tiên date trên URL, nếu không có thì dùng hôm nay
-    currentDate = urlDate
-        ? urlDate
-        : new Date().toISOString().split("T")[0];
+// Ưu tiên date trên URL, nếu không có thì dùng hôm nay
+currentDate = urlDate ? urlDate : new Date().toISOString().split("T")[0];
 
-    dateInput.value = currentDate;
+dateInput.value = currentDate;
+
+updateAddPatientLink();
+loadByDate(currentDate);
+
+dateInput.onchange = () => {
+    currentDate = dateInput.value;
+
+    // Cập nhật URL
+    window.history.replaceState(
+        null, "", `/nurse/examination-list?date=${currentDate}`
+    );
 
     updateAddPatientLink();
     loadByDate(currentDate);
+};
 
-    dateInput.onchange = () => {
-        currentDate = dateInput.value;
-
-        // Cập nhật URL cho đồng bộ
-        window.history.replaceState(
-            null,
-            "",
-            `/nurse/examination-list?date=${currentDate}`
-        );
-
-        updateAddPatientLink();
-        loadByDate(currentDate);
-    };
-
-    document
-        .querySelector("button[type='submit']")
-        .addEventListener("click", submitList);
-});
+document
+    .querySelector("button[type='submit']")
+    .addEventListener("click", submitList);
 

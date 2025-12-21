@@ -22,7 +22,7 @@ def hash_password(password: str):
 
 
 def create_fake_patients():
-    with open(f"data/fake_date.json", encoding="utf-8") as f:
+    with open(f"data/fake_data.json", encoding="utf-8") as f:
         data = json.load(f)
 
     patients = data.get("patient_data", [])

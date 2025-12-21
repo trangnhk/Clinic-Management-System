@@ -21,6 +21,10 @@ print(">>> Database created")
 EOF
 
 echo "--- Tạo account user --"
+python clinicsystem/dao.py
+
+echo "--- Tạo fake date ---"
+python clinicsystem/fake_data.py
 
 echo "--- Chạy ứng dụng ---"
 python -m flask run clinicsystem/index.py

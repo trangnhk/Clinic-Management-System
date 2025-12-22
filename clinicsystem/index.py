@@ -1,5 +1,7 @@
+import random
+
 import cloudinary.uploader
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
 from clinicsystem import app, dao, login, db
 from datetime import datetime
@@ -134,12 +136,129 @@ def doctor_home_info():
 def cashier_home_info():
     return render_template('home_info.html', user=current_user, role="cashier")
 
+@app.route('/cashier/payment')
+@login_required
+def cashier_payment():
+    waiting_list = dao.get_waiting_bills()
+    # Đường dẫn file đã sửa theo cấu trúc thư mục mới
+    return render_template('cashier/payment.html', waiting_list=waiting_list)
+
+    # # --- ĐOẠN NÀY DÙNG ĐỂ TEST GIAO DIỆN (START) ---
+    # # Tạo class giả để mô phỏng cấu trúc database
+    # class FakeUser:
+    #     def __init__(self, name):
+    #         self.fullname = name
+    #         self.id = "BN00" + str(random.randint(1, 9))
+    #
+    # class FakePrescription:
+    #     def __init__(self, name):
+    #         self.patient = FakeUser(name)
+    #
+    # class FakeReceipt:
+    #     def __init__(self, id, name):
+    #         self.id = id
+    #         self.prescription = FakePrescription(name)
+    #         self.created_date = "21/12/2025"
+    #
+    # # Tạo danh sách 3 bệnh nhân giả
+    # waiting_list = [
+    #     FakeReceipt(101, "Nguyễn Văn A"),
+    #     FakeReceipt(102, "Trần Thị B"),
+    #     FakeReceipt(103, "Lê Văn C")
+    # ]
+    # # --- KẾT THÚC ĐOẠN DỮ LIỆU GIẢ ---
+
+
+# API: Lấy chi tiết hóa đơn (Cho Javascript gọi)
+@app.route('/api/bill-detail/<bill_id>')
+def api_bill_detail(bill_id):
+    data = dao.get_bill_detail(bill_id)
+    if data:
+        return jsonify({
+            'success': True,
+            'id': data['bill'].id,
+            'patient_name': data['patient'].fullname,
+            'diagnosis': data['bill'].prescrip.diagnosis,
+            'medicines': data['medicines'],
+            'med_fee': float(data['bill'].medicine_fee),
+            'exam_fee': float(data['bill'].medical_fee),
+            'total': data['bill'].total
+        })
+    return jsonify({'success': False})
+
+    # fake_data = {
+    #     "success": True,
+    #     "patient_name": "Nguyễn Văn A (Demo)",
+    #     "diagnosis": "Viêm họng cấp (Sốt siêu vi)",
+    #     "exam_fee": 100000,
+    #     "med_fee": 250000,
+    #     "total": 350000,
+    #     "medicines": [
+    #         {
+    #             "name": "Paracetamol 500mg",
+    #             "unit": "Viên",
+    #             "quantity": 10,  # Lưu ý: check xem code html bạn dùng 'quantity' hay 'qty'
+    #             "qty": 10,  # Mình để cả 2 cho chắc ăn
+    #             "price": 2000,
+    #             "amount": 20000
+    #         },
+    #         {
+    #             "name": "Vitamin C sủi",
+    #             "unit": "Hộp",
+    #             "quantity": 2,
+    #             "qty": 2,
+    #             "price": 50000,
+    #             "amount": 100000
+    #         },
+    #         {
+    #             "name": "Siro ho Prospan",
+    #             "unit": "Chai",
+    #             "quantity": 1,
+    #             "qty": 1,
+    #             "price": 130000,
+    #             "amount": 130000
+    #         }
+    #     ]
+    # }
+    # return jsonify(fake_data)
+
+# API: Xử lý thanh toán
+@app.route('/api/pay', methods=['POST'])
+def api_pay():
+    data = request.json
+    if dao.pay_bill(data.get('bill_id')):
+        return jsonify({'success': True})
+    return jsonify({'success': False})
+
+
+
 # ADMIN
 @app.route('/admin')
 @login_required
 def admin_home_info():
     return render_template('home_info.html', user=current_user, role="admin")
 
+
+@app.route('/admin/stats')
+@login_required
+def admin_stats():
+    # Lấy tháng năm hiện tại làm mặc định
+    month = request.args.get('month', datetime.now().month, type=int)
+    year = request.args.get('year', datetime.now().year, type=int)
+    kw = request.args.get('type', 'revenue') # mặc định xem doanh thu
+
+    if kw == 'medicine':
+        stats_data = dao.medicine_report(month, year)
+    elif kw == 'overview':
+        stats_data = dao.overview_report(month, year)
+    else:
+        stats_data = dao.revenue_report(month, year)
+
+    return render_template('admin/stats.html',
+                           stats=stats_data,
+                           month=month,
+                           year=year,
+                           report_type=kw)
 
 
 if __name__ == "__main__":

@@ -53,4 +53,92 @@
     border: 1px solid #ddd;
     box-shadow: none;
 }
+/* --- PHẦN CỦA GEM THÊM VÀO (THANH TOÁN & THỐNG KÊ) --- */
+
+/* 1. GIAO DIỆN THANH TOÁN (Split Screen) */
+.payment-wrapper {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin-top: 20px;
+    height: 85vh; /* Chiều cao cố định để scroll */
+}
+
+.left-panel {
+    background: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.right-panel {
+    padding: 30px;
+    height: 100%;
+    overflow-y: auto;
+    background: white;
+}
+
+/* Table Style cho hợp tông Bootstrap */
+.custom-table thead th {
+    background-color: #CC5063; /* Màu chủ đạo của Trang */
+    color: white;
+    border: none;
+}
+.custom-table tbody tr:hover {
+    background-color: #ffe6e9; /* Màu hồng nhạt khi hover */
+    cursor: pointer;
+}
+.custom-table tr.selected {
+    background-color: #CC5063 !important;
+    color: white;
+}
+
+/* Ô tìm kiếm bo tròn giống Login của Trang */
+.rounded-search {
+    border-radius: 999px;
+    border: 2px solid #DBCECE;
+    padding: 10px 20px;
+}
+
+/* Phần tổng tiền */
+.invoice-summary {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    text-align: right;
+}
+.total-price {
+    font-size: 24px;
+    font-weight: bold;
+    color: #CC5063;
+}
+
+/* 2. GIAO DIỆN THỐNG KÊ */
+.kpi-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    padding: 20px;
+    text-align: center;
+    background: white;
+    transition: transform 0.3s;
+}
+.kpi-card:hover {
+    transform: translateY(-5px);
+}
+.kpi-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #CC5063;
+}
+.chart-container {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
 

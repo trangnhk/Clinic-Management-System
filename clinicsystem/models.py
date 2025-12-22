@@ -13,6 +13,7 @@ import uuid
 class UserRole(RoleEnum):
     PATIENT = 1
     EMPLOYEE = 2
+    CASHIER = 3
 
 class UserGender(RoleEnum):
     MALE = 1
@@ -245,6 +246,7 @@ class BillStatus(RoleEnum):
 
 class Bill(db.Model):
     id = Column(String(20), nullable=False, unique=True, primary_key=True)
+    created_date = Column(DateTime, default=datetime.now)
     medical_fee = Column(DECIMAL(10,3), nullable=False, default=100000.000)
     medicine_fee = Column(DECIMAL(10,3), default=0.0)
     total = Column(DECIMAL(15,3), nullable=False)
@@ -368,6 +370,7 @@ class Allergy(db.Model):
     #     if self.is_allergic(patient_id=patient_id, medicine_id=medicine_id):
     #         return f"PATIENT {self.patient_id.name} HAS ALLERGY WITH {self.medicine_id.name}"
     #     return f"DON'T HAVING ANY ALLERGIES"
+
 
 if __name__ == '__main__':
     with app.app_context():

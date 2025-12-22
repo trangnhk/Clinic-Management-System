@@ -1,0 +1,219 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <div class="row g-0" style="height: calc(100vh - 140px);">
+
+        <div class="col-3 bg-light border-end d-flex flex-column h-100">
+            <div class="p-3 border-bottom bg-white">
+                <h5 class="text-danger fw-bold m-0"><i class="fa fa-list"></i> DANH SÁCH CHỜ</h5>
+            </div>
+
+            <div class="p-2">
+                <input type="text" class="form-control" placeholder="Tìm bệnh nhân...">
+            </div>
+
+            <div class="flex-grow-1" style="overflow-y: auto;">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-danger text-white sticky-top" style="z-index: 1;">
+                        <tr>
+                            <th style="width: 30%">Mã</th>
+                            <th>Bệnh Nhân</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in waiting_list %}
+                        <tr onclick="loadBillDetail('{{ item.id }}')" style="cursor: pointer; border-bottom: 1px solid #eee;">
+                            <td class="fw-bold text-danger">{{ item.id }}</td>
+                            <td>
+                                <div class="fw-bold">{{ item.prescrip.patient.fullname }}</div>
+                                <small class="text-muted">Mới tạo</small>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-9 bg-white d-flex flex-column" style="height: 100%;">
+
+            <div id="invoice-placeholder" class="d-flex flex-column align-items-center justify-content-center h-100 text-muted bg-light">
+                <i class="fas fa-file-invoice-dollar fa-4x mb-3 text-secondary"></i>
+                <h4>Chọn bệnh nhân để thanh toán</h4>
+            </div>
+
+            <div id="invoice-area" class="d-flex flex-column h-100" style="display: none !important;">
+
+                <div class="p-4 border-bottom shadow-sm bg-white">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h2 style="color: #CC5063; font-weight: 800; margin: 0;">HÓA ĐƠN THANH TOÁN</h2>
+                            <p class="text-muted mb-0">Medik Clinic System</p>
+                        </div>
+                        <div class="text-end">
+                            <h5 class="mb-1">Mã HĐ: <span id="bill-id-display" class="text-danger fw-bold">...</span></h5>
+                            <small class="text-muted" id="bill-date">...</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-grow-1 p-4" style="overflow-y: auto;">
+                    <div class="card mb-4 border-0 bg-light">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-1">Khách hàng:</p>
+                                    <h5 id="p-name" class="fw-bold">...</h5>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1">Chẩn đoán:</p>
+                                    <h5 id="p-diagnosis" class="text-danger">...</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered text-center">
+                        <thead class="table-light">
+                            <tr>
+                                <th>STT</th>
+                                <th class="text-start">Tên dịch vụ / Thuốc</th>
+                                <th>Đơn vị</th>
+                                <th>SL</th>
+                                <th>Đơn giá</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody id="medicine-table-body">
+                            </tbody>
+                    </table>
+                </div>
+
+                <div class="p-4 border-top bg-light">
+                    <div class="row">
+                        <div class="col-md-6"></div>
+                        <div class="col-md-6 text-end">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tiền thuốc:</span>
+                                <span class="fw-bold" id="fee-med">0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tiền khám:</span>
+                                <span class="fw-bold" id="fee-exam">0</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="mb-0">TỔNG CỘNG:</h4>
+                                <h3 class="mb-0 text-danger fw-bold" id="total-money">0 VND</h3>
+                            </div>
+                            <div class="d-flex gap-2 mt-3">
+
+                                <button class="btn btn-secondary fw-bold" style="min-width: 100px;" onclick="location.reload()"> HỦY </button>
+
+                                <button class="btn btn-dark fw-bold" style="min-width: 120px;">
+                                    <i class="fa fa-print"></i> IN HÓA ĐƠN
+                                </button>
+
+                                <button class="btn btn-danger fw-bold flex-grow-1" style="background: #CC5063; border: none;" onclick="processPayment()">
+                                    <i class="fa fa-check-circle"></i> THANH TOÁN
+                                </button>
+
+</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+</div>
+</div>
+
+<script>
+    let currentBillId = null;
+
+    // 1. Hàm gọi API lấy chi tiết
+    function loadBillDetail(billId) {
+        currentBillId = billId;
+
+        fetch(`/api/bill-detail/${billId}`)
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    // --- SỬA LỖI Ở ĐÂY ---
+                    // Ẩn màn hình chờ
+                    document.getElementById('invoice-placeholder').style.setProperty('display', 'none', 'important');
+
+                    // Hiện hóa đơn (Phải dùng FLEX để giữ cấu trúc cột dọc)
+                    document.getElementById('invoice-area').style.setProperty('display', 'flex', 'important');
+                    // ---------------------
+
+                    // 1. Mã hóa đơn
+                    const billIdEl = document.getElementById('bill-id-display');
+                    if(billIdEl) billIdEl.innerText = billId;
+
+                    // 2. Ngày lập
+                    const dateEl = document.getElementById('bill-date');
+                    if(dateEl) dateEl.innerText = new Date().toLocaleDateString('vi-VN');
+
+                    // 3. Thông tin bệnh nhân
+                    document.getElementById('p-name').innerText = data.patient_name;
+                    document.getElementById('p-diagnosis').innerText = data.diagnosis;
+
+                    // 4. Tiền tệ
+                    document.getElementById('fee-med').innerText = data.med_fee.toLocaleString() + " VND";
+                    document.getElementById('fee-exam').innerText = data.exam_fee.toLocaleString() + " VND";
+                    document.getElementById('total-money').innerText = data.total.toLocaleString() + " VND";
+
+                    // 5. Bảng thuốc
+                    let tableHtml = "";
+                    if (data.medicines && data.medicines.length > 0) {
+                        data.medicines.forEach((m, index) => {
+                            tableHtml += `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td class="text-start fw-bold">${m.name}</td>
+                                    <td>${m.unit}</td>
+                                    <td>${m.qty}</td>
+                                    <td>${m.price.toLocaleString()}</td>
+                                    <td class="fw-bold text-danger">${m.amount.toLocaleString()}</td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        tableHtml = '<tr><td colspan="6" class="text-center text-muted">Không có thuốc</td></tr>';
+                    }
+                    document.getElementById('medicine-table-body').innerHTML = tableHtml;
+                } else {
+                    alert("Không lấy được thông tin hóa đơn!");
+                }
+            })
+            .catch(err => {
+                console.error("Lỗi:", err);
+                alert("Có lỗi xảy ra khi tải dữ liệu.");
+            });
+    }
+
+    // 2. Hàm thanh toán
+    function processPayment() {
+        if(!currentBillId) return;
+        if(!confirm("Xác nhận thanh toán hóa đơn " + currentBillId + "?")) return;
+
+        fetch('/api/pay', {
+            method: 'POST',
+            body: JSON.stringify({ 'bill_id': currentBillId }),
+            headers: { 'Content-Type': 'application/json' }
+        }).then(res => res.json())
+          .then(data => {
+              if (data.success) {
+                  alert("Thanh toán thành công!");
+                  location.reload();
+              } else {
+                  alert("Lỗi thanh toán: " + (data.msg || "Không xác định"));
+              }
+          })
+          .catch(err => console.error(err));
+    }
+</script>
+
+{% endblock %}

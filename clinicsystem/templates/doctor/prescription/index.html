@@ -1,0 +1,37 @@
+{% extends "doctor/layout/base.html" %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <h2 class="text-center fw-bold text-primary mb-4">PHIẾU KHÁM BỆNH</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-5">
+            {% include "doctor/prescription/patient_info.html" %}
+        </div>
+
+        <div class="col-md-7">
+            {% include "doctor/prescription/clinical_exam.html" %}
+        </div>
+
+    </div>
+    {% include "doctor/prescription/medicine_form.html" %}
+    {% include "doctor/prescription/medicine_table.html" %}
+    {% include "doctor/prescription/history_patient.html" %}
+
+    <div class="d-flex justify-content-between mt-4">
+        <a href="/doctor/waiting-list" class="btn btn-secondary btn-lg rounded-pill px-4">
+            <i class="fa-solid fa-arrow-left"></i> Quay lại
+        </a>
+        <button class="btn btn-primary btn-lg rounded-pill px-5 shadow" onclick="luuPhieuKham()">
+            <i class="fa-solid fa-floppy-disk"></i> LƯU PHIẾU KHÁM
+        </button>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/historyPatient.js') }}"></script>
+<script src="{{ url_for('static', filename='js/checkAllergy.js') }}"></script>
+<script src="{{ url_for('static', filename='js/searchMedicine.js') }}"></script>
+<script src="{{ url_for('static', filename='js/prescriptionForm.js') }}"></script>
+
+
+{% endblock %}

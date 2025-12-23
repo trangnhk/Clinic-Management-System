@@ -40,16 +40,14 @@ def get_examination_list():
         }), 400
 
     try:
-        exam_date = datetime.strptime(date, "%Y-%m-%d")
+        exam_date = datetime.strptime(date, "%Y-%m-%d").date()
     except ValueError:
         return jsonify({
             "error": "Invalid date format. Expected YYYY-MM-DD"
         }), 400
 
-    start = exam_date
-    end = exam_date + timedelta(days=1)
 
-    exam_list = ExaminationList.query.filter(ExaminationList.date >= start, ExaminationList.date < end).first()
+    exam_list = ExaminationList.query.filter(ExaminationList.date == exam_date).first()
 
     if not exam_list:
         return jsonify({
@@ -96,6 +94,7 @@ def submit_examination_list():
     date = request.json.get("date")
     try:
         dao.submit_examination_list(date, nurse_id=current_user.id)
+
         return jsonify({"status": 200})
     except Exception as ex:
         return jsonify({"error": str(ex)}), 400

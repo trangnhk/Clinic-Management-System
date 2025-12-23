@@ -5,7 +5,7 @@ from sqlalchemy import Column, String, Integer, DateTime, Enum, ForeignKey, DECI
 from sqlalchemy.orm import relationship
 from sqlalchemy import UniqueConstraint
 from enum import Enum as RoleEnum
-from datetime import datetime
+from datetime import datetime, date
 from decimal import Decimal
 from flask_login import UserMixin
 import uuid
@@ -219,7 +219,7 @@ class ExaminationList(db.Model):
             number=number,
             patient_id=patient.id,
             examination_id=self.id,
-            status=AppointmentStatus.WAITING_EXAMINATION
+            status=AppointmentStatus.PENDING_CONFIRM
         )
         db.session.add(appointment)
         db.session.commit()
@@ -227,7 +227,7 @@ class ExaminationList(db.Model):
     def confirm_list(self):
         if self.status.__eq__(ExaminationStatus.SUBMIITED):
             for a in self.appointments:
-                a.update_status(AppointmentStatus.IN_EXAMINATION)
+                a.update_status(AppointmentStatus.WAITING_EXAMINATION)
     # def is_successfully_add_patient(self, patient: Patient) -> bool:
     #     pass
     #
@@ -279,6 +279,7 @@ class Bill(db.Model):
     medicine_fee = Column(DECIMAL(10,3), default=0.0)
     total = Column(DECIMAL(15,3), nullable=False)
     status = Column(Enum(BillStatus), default=BillStatus.UNPAID)
+    created_date = Column(Date, nullable=False, default=datetime.date)
 
     # One-to-one with Bill
     prescrip_id = Column(String(20), ForeignKey('prescription.id'), unique=True, nullable=False)
@@ -294,10 +295,14 @@ class Bill(db.Model):
     def update_status(self, new_billstatus: BillStatus):
         self.status = new_billstatus
 
+    def update_date(self, new_date: Date):
+        self.created_date = new_date
+
 class Prescription(db.Model):
     id = Column(String(20), unique=True, nullable=False, primary_key=True)
     symptom = Column(String(150), nullable=False)
     diagnosis = Column(String(150), nullable=False)
+    created_date = Column(Date, nullable=False, default=date.today())
 
     # Many-to-one with Doctor
     doctor_id = Column(String(30), ForeignKey(Doctor.id), nullable=False)
@@ -314,6 +319,8 @@ class Prescription(db.Model):
     def update_clinical_info(self, symptom: str = None, diagnosis: str = None):
         self.symptom = symptom
         self.diagnosis = diagnosis
+
+
 
     # def add_medicine(self, detail):
     #     self.details

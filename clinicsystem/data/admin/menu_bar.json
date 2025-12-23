@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "name": "Thông tin admin",
+    "url": "/admin"
+  },
+  {
+    "id": 2,
+    "name": "Thống kê báo cáo",
+    "url": "/admin/stats"
+  }
+
+]

@@ -15,18 +15,24 @@ def index():
 
 @app.context_processor
 def load_menu_bar():
+    role = None
     if current_user.is_authenticated:
+        role = "patient"
         if isinstance(current_user, Nurse):
-            return {"menu_bar": dao.load_menu_bar_nurse()}
-        # elif isinstance(current_user, Doctor):
-        #     return {"menu_bar": dao.load_menu_bar_doctor()}
-        # elif isinstance(current_user, Cashier):
-        #     return {"menu_bar": dao.load_menu_bar_cashier()}
-        # elif isinstance(current_user, Administrator):
-        #     return {"menu_bar": dao.load_menu_bar_admin()}
-
-    # Default
-    return {"menu_bar": dao.load_menu_bar()}
+            role = "nurse"
+        if isinstance(current_user, Cashier):
+            role = "cashier"
+        if isinstance(current_user, Administrator):
+            role = "admin"
+        elif isinstance(current_user, Doctor):
+            role = "doctor"
+    #     # elif isinstance(current_user, Cashier):
+    #     #     return {"menu_bar": dao.load_menu_bar_cashier()}
+    #     # elif isinstance(current_user, Administrator):
+    #     #     return {"menu_bar": dao.load_menu_bar_admin()}
+    #
+    # # Default
+    return {"menu_bar": dao.load_menu_bar(name=role)}
 
 # LOGIN
 @login.user_loader
@@ -178,16 +184,16 @@ def doctor_home_info():
     return render_template('home_info.html', user=current_user, role="doctor")
 
 # CASHIER
-@app.route('/cashier')
-@login_required
-def cashier_home_info():
-    return render_template('home_info.html', user=current_user, role="cashier")
+# @app.route('/cashier')
+# @login_required
+# def cashier_home_info():
+#     return render_template('home_info.html', user=current_user, role="cashier")
 
 # ADMIN
-@app.route('/admin')
-@login_required
-def admin_home_info():
-    return render_template('home_info.html', user=current_user, role="admin")
+# @app.route('/admin')
+# @login_required
+# def admin_home_info():
+#     return render_template('home_info.html', user=current_user, role="admin")
 
 
 

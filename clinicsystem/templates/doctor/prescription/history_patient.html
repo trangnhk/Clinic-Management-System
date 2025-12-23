@@ -1,0 +1,51 @@
+<div class="modal fade" id="historyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 900px;">
+        <div class="modal-content border-0 shadow-lg">
+
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title fw-bold text-uppercase">
+                    <i class="fa-solid fa-file-medical me-2"></i> Medical History
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control rounded-pill"
+                               placeholder="Search diagnosis, symptoms...">
+                        <span class="input-group-text bg-transparent border-0 ms-n5"><i class="fa fa-search"></i></span>
+                    </div>
+                    <h6 class="fw-bold mt-3">
+                        Patient: <span id="historyPatientName" class="text-primary">Loading...</span>
+                    </h6>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead class="bg-dark text-white">
+                        <tr class="text-center">
+                            <th class="py-3">Date</th>
+                            <th class="py-3">Doctor</th>
+                            <th class="py-3">Symptoms</th>
+                            <th class="py-3">Diagnosis</th>
+                            <th class="py-3">Prescription</th>
+                        </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="noHistoryMsg" class="text-center text-muted py-3" style="display: none;">
+                    Bệnh nhân này chưa có lịch sử khám bệnh nào.
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

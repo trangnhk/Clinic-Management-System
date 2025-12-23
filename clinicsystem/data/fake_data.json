@@ -28,6 +28,34 @@
       "gender": "MALE",
       "address": "Cần Thơ",
       "medical_id": "CTO0000009"
+    },
+    {
+      "fullname": "Le Van D",
+      "username": "patient_d",
+      "password": "123456",
+      "phone_number": "0900000004",
+      "dob": "1989-12-12",
+      "gender": "MALE",
+      "address": "Cần Thơ"
+    },
+    {
+      "fullname": "Le Van E",
+      "username": "patient_e",
+      "password": "123456",
+      "phone_number": "0900000005",
+      "dob": "1999-11-12",
+      "gender": "MALE",
+      "address": "Hà Nội",
+      "medical_id": "HNOI0000009"
+    },
+    {
+      "fullname": "Nguyen Thi F",
+      "username": "patient_f",
+      "password": "123456",
+      "phone_number": "0900000006",
+      "dob": "1989-12-12",
+      "gender": "FEMALE",
+      "address": "Hồ Chí Minh"
     }
   ]
 }

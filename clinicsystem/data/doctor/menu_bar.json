@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "name": "Thông tin bác sĩ",
+    "url": "/doctor"
+  },
+  {
+    "id": 2,
+    "name": "Danh sách chờ khám",
+    "url": "/doctor/waiting-list"
+  },
+  {
+    "id": 3,
+    "name": "Lập phiếu khám",
+    "url": "/doctor/prescription"
+  }
+
+]

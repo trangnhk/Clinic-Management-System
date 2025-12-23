@@ -4,6 +4,7 @@ from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
 
+
 app = Flask(__name__)
 app.secret_key = "NGOHOANGKIEUTRANG"
 
@@ -19,4 +20,10 @@ db = SQLAlchemy(app)
 
 
 from clinicsystem.nurse.routes import nurse_page
+from clinicsystem.admin.routes import admin_page
+from clinicsystem.cashier.routes import cashier_page
+from clinicsystem.doctor import doctor_page
 app.register_blueprint(nurse_page)
+app.register_blueprint(admin_page)
+app.register_blueprint(cashier_page)
+app.register_blueprint(doctor_page)

@@ -1,0 +1,73 @@
+{% extends "doctor/layout/base.html" %}
+
+{% block title %}Danh sách chờ khám{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-center fw-bold mb-3">DANH SÁCH CHỜ KHÁM</h1>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="bg-light text-dark">
+                    <tr>
+                        <th class="py-3 ps-4">STT</th>
+                        <th class="py-3">Họ và Tên</th>
+                        <th class="py-3">Giới tính</th>
+                        <th class="py-3">Ngày sinh</th>
+                        <th class="py-3">Trạng thái</th>
+                        <th class="py-3 text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if waiting_list %}
+                        {% for app in waiting_list %}
+                        <tr>
+                            <td class="ps-4 fw-bold">{{ loop.index }}</td> <td>
+                                <span class="fw-semibold text-primary">{{ app.patient.fullname }}</span>
+                                <br>
+                                <small class="text-muted">Mã BN: {{ app.patient.id }}</small>
+                            </td>
+
+                            <td>
+                                {% if app.patient.gender.name == 'MALE' %} Nam
+                                {% else %} Nữ {% endif %}
+                            </td>
+
+                            <td>
+                                <i class="fa-regular fa-calendar me-1 text-secondary"></i>
+                                {{ app.patient.dob.strftime('%d-%m-%Y') }}
+                            </td>
+
+                            <td>
+                                <span class="badge bg-warning text-dark">{{app.status.name}}</span>
+                            </td>
+
+                            <td class="text-center">
+                                <a href="/doctor/prescription/{{ app.patient.id }}"
+                                   class="btn btn-success px-4 rounded-pill fw-bold">
+                                   Khám (Examine)
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <h5>Hiện không có bệnh nhân nào đang chờ.</h5>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="d-flex justify-content-end mt-4">
+    <a href="{{ url_for('doctor.get_waiting_list') }}" class="btn btn-primary">
+        <i class="fa-solid fa-rotate-right me-1"></i> Tải lại danh sách
+    </a>
+</div>
+{% endblock %}

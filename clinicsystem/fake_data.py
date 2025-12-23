@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 import hashlib
 import uuid
 import random
@@ -11,7 +11,7 @@ from clinicsystem.models import (
     Nurse,
     Unit,
     Medicine,
-    Allergy
+    Allergy, DetailPrescrip, Appointment, AppointmentStatus, Bill, BillStatus, Prescription, Cashier, Doctor
 )
 from clinicsystem import app
 from flask import json
@@ -26,18 +26,28 @@ def create_fake_patients():
         data = json.load(f)
 
     patients = data.get("patient_data", [])
+    created_patient = []
 
     for patient in patients:
-        dao.add_user(
+        medical_id = patient.get("medical_id")
+        if not medical_id:
+            medical_id = None
+        if Patient.query.filter_by(username=patient["username"]).first():
+            continue
+
+        p = dao.add_user(
             fullname=patient["fullname"],
             username=patient["username"],
             password=patient["password"],
             phone_number=patient["phone_number"],
             dob=patient["dob"],
-            gender=data["gender"],
+            gender=patient["gender"],
             address=patient["address"],
-            medical_id=patient["medical_id"]
+            medical_id=medical_id
         )
+        created_patient.append(p)
+
+    return created_patient
 
 
 def create_examination_list(date: datetime):
@@ -62,10 +72,9 @@ def add_patients_to_examination(exam: ExaminationList, patients):
 
 
 def run():
-
     patients = create_fake_patients()
 
-    exam_date = datetime(2025, 12, 30)
+    exam_date = datetime(2025, 12, 30).date()
     exam = create_examination_list(exam_date)
 
     add_patients_to_examination(exam, patients)
@@ -139,7 +148,7 @@ def fake_allergies():
     allergies = []
 
     for patient in patients:
-        allergy_count = random.randint(0, 2)
+        allergy_count = random.randint(0, 4)
 
         for _ in range(allergy_count):
             med = random.choice(medicines)
@@ -168,9 +177,86 @@ def fake_allergies():
     else:
         print("Không có Allergy mới")
 
+def fake_prescriptions():
+    patients = Patient.query.all()
+    doctor = Doctor.query.first()
+    medicines = Medicine.query.all()
+
+    if not patients or not doctor or not medicines:
+        return
+
+    prescriptions = []
+
+    for patient in patients:
+        pres = Prescription(
+            id=str(uuid.uuid4())[:20],
+            symptom="Sốt, đau đầu",
+            diagnosis="Cảm cúm",
+            doctor_id=doctor.id,
+            patient_id=patient.id
+        )
+
+        db.session.add(pres)
+        db.session.flush()  # để có pres.id
+
+        # mỗi đơn 1–3 thuốc
+        for med in random.sample(medicines, random.randint(1, 3)):
+            detail = DetailPrescrip(
+                prescription_id=pres.id,
+                medicine_id=med.id,
+                quantity=random.randint(1, 5),
+                unit_name=med.unit.name,
+                instruction="Uống sau ăn"
+            )
+            db.session.add(detail)
+
+        prescriptions.append(pres)
+
+    db.session.commit()
+    return prescriptions
+
+def fake_bills():
+    prescriptions = Prescription.query.filter(~Prescription.bill.has()).all()
+    cashier = Cashier.query.first()
+
+    if not prescriptions or not cashier:
+        return
+
+    bills = []
+
+    for pres in prescriptions:
+        medicine_fee = pres.cal_medicine_fee()
+
+        bill = Bill(
+            id=str(uuid.uuid4())[:20],
+            medical_fee=Decimal("100000"),
+            medicine_fee=medicine_fee,
+            total=Decimal("100000") + medicine_fee,
+            status=random.choice(list(BillStatus)),
+            prescrip_id=pres.id,
+            cashier_id=cashier.id,
+            created_date=datetime.now().date()
+        )
+
+        bills.append(bill)
+
+    db.session.add_all(bills)
+    db.session.commit()
+
+def randomize_appointment_status():
+    appointments = Appointment.query.all()
+    for ap in appointments:
+        ap.status = random.choice(list(AppointmentStatus))
+    db.session.commit()
+
+
 if __name__ == "__main__":
     with app.app_context():
         run()
         fake_units()
         fake_medicines()
         fake_allergies()
+        fake_prescriptions()
+        fake_bills()
+        # randomize_appointment_status()
+

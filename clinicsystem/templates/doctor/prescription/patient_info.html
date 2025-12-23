@@ -1,0 +1,36 @@
+<div class="card shadow-sm h-100 border-primary">
+    <div class="card-header bg-primary text-white fw-bold">
+        <i class="fa-solid fa-user"></i> THÔNG TIN BỆNH NHÂN
+    </div>
+    <div class="card-body">
+        {% if patient %}
+            <input type="hidden" id="patientIdHidden" value="{{ patient.id }}">
+            <input class="form-control fw-bold bg-light"
+                   value="{{ patient.fullname }}" disabled>
+
+            <small>Ngày sinh: {{ patient.dob.strftime('%d/%m/%Y') }}</small><br>
+            <small>SĐT: {{ patient.phone_number }}</small><br>
+            <small>Giới tính: {{ patient.gender.name }}</small>
+        {% else %}
+            <select id="patientSelect" class="form-select">
+                <option value="">-- Chọn bệnh nhân --</option>
+                {% for app in waiting_list %}
+                <option value="{{ app.patient.id }}">
+                    {{ app.patient.fullname }}
+                </option>
+                {% endfor %}
+            </select>
+        {% endif %}
+
+        <div class="alert alert-warning mt-3">
+            <strong>Cảnh báo dị ứng:</strong>
+            <span id="allergyWarning">Chưa kiểm tra</span>
+        </div>
+
+        <button class="btn btn-secondary btn-sm" onclick="xemLichSu()">
+            Lịch sử khám
+        </button>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/historyPatient.js') }}"></script>

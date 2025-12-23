@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "name": "Thông tin thu ngân",
+    "url": "/cashier"
+  },
+  {
+    "id": 2,
+    "name": "Thanh toán hóa đơn",
+    "url": "/cashier/payment"
+  }
+
+]

@@ -1,0 +1,158 @@
+{% extends "admin/layout/base.html" %}
+
+{% block title %}Thống kê báo cáo{%endblock%}
+
+{% block content %}
+<div class="container-fluid px-4 mt-4">
+
+    <!HEADER>
+    <h2 class="text-center mb-4 fw-bold text-danger text-uppercase">
+        Reports & Analytics
+    </h2>
+
+    <!FROM DATE>
+    <form class="row g-3 justify-content-center mb-4 border p-3 rounded bg-light">
+        <input type="hidden" name="type" value="{{report_type}}">
+
+        <div class="col-auto">
+            <label class="fw-bold">Year: </label>
+            <select name="year" class="form-select border-danger">
+                {% for y in available_years %}
+                    <option value="{{ y }}" {% if y == year %} selected {% endif %}>{{ y }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-auto">
+            <label class="fw-bold">Month: </label>
+            <select name="month" class="form-select border-danger">
+                {% for m in range(1,13) %}
+                    <option value="{{ m }}" {% if m == month %} selected {% endif %}>{{ m }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-auto align-self-end">
+            <button type="submit" class="btn btn-primary rounded-pill py-2 fw-bold">View Report</button>
+        </div>
+
+    </form>
+
+
+    <!REPORT TABS>
+    <div class="d-flex justify-content-center gap-3 mb-4">
+        {% set tabs = {
+        "overview": "Overview",
+        "revenue": "Revenue",
+        "medicine": "Medicine Usage"
+        } %}
+
+        {% for key, label in tabs.items() %}
+        <a href="{{ url_for('admin.admin_stats', type=key, month=month, year=year) }}"
+           class="btn rounded-pill px-4
+           {{ 'btn-danger' if report_type == key else 'btn-outline-danger' }}">
+            {{ label }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <!REPORT CONTENT>
+    {% if report_type == "overview" %}
+    <div class="row text-center mb-4">
+        <div class="col-md-3 fw-bold">Total Appointments<br><span class="text-muted">...</span></div>
+        <div class="col-md-3 fw-bold">New Patients<br><span class="text-muted">...</span></div>
+        <div class="col-md-3 fw-bold">Revenue<br><span class="text-danger">... VNĐ</span></div>
+        <div class="col-md-3 fw-bold">Medicines<br><span class="text-muted">...</span></div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 text-center">
+            <h6 class="fw-bold">APPOINTMENTS TREND</h6>
+            <canvas id="chartApp"></canvas>
+        </div>
+        <div class="col-md-4 text-center border-start border-end">
+            <h6 class="fw-bold">REVENUE TREND</h6>
+            <canvas id="chartRev"></canvas>
+        </div>
+        <div class="col-md-4 text-center">
+            <h6 class="fw-bold">MEDICINES USAGE TREND</h6>
+            <canvas id="chartMed"></canvas>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="row">
+        <div class="col-lg-7">
+            <table class="table table-hover table-bordered">
+                <thead class="table-dark text-center">
+                {% if report_type == 'medicine' %}
+                <tr>
+                    <th>No.</th>
+                    <th>Medicine</th>
+                    <th>Unit</th>
+                    <th>Quantity</th>
+                    <th>Usage Count</th>
+                </tr>
+                {% else %}
+                <tr>
+                    <th>No.</th>
+                    <th>Date</th>
+                    <th>Total Patients</th>
+                    <th>Revenue</th>
+                </tr>
+                {% endif %}
+                </thead>
+                <tbody class="text-center">
+
+
+                {% if report_type == "medicine" %}
+                {% set labels = stats.labels %}
+                {% set quantities = stats.datasets[0].data %}
+                {% for i in range(labels|length) %}
+                <tr>
+                    <td>{{ i+1 }}</td>
+                    {% set parts = labels[i].rsplit('(', 1) %}
+                    <td>{{ parts[0].strip() }}</td>
+                    <td>{{ parts[1].replace(')', '') if parts|length > 1 else '-' }}</td>
+                    <td>{{ quantities[i] }}</td>
+                    <td>-</td>
+                </tr>
+                {% endfor %}
+
+                {% else %}
+                {% for s in stats %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ s[0].strftime("%d/%m") }}</td>
+                    <td>{{ s[1] }}</td>
+                    <td>{{ "{:,.0f}".format(s[2] | float) }}</td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-lg-5 border rounded p-3 bg-white">
+            <h5 class="text-center fw-bold mb-3" style="color: #e83e8c;">Visualization</h5>
+            <canvas id="mainChart"></canvas>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    window.__REPORT_TYPE__ = "{{ report_type }}";
+
+    {% if report_type in ["overview", "medicine"] %}
+        window.__STATS__ = {{ stats | tojson | safe }};
+    {% else %}
+        window.__STATS__ = {{ chart_data | tojson | safe }};
+    {% endif %}
+</script>
+
+<script src="{{ url_for('static', filename='js/drawChart.js') }}"></script>
+
+{% endblock %}

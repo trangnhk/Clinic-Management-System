@@ -388,6 +388,7 @@ def get_available_years():
     return [int(y[0]) for y in years]
 
 
+
 def overview_report(month, year):
     # 1. Xu hướng bệnh nhân (Appointments) - Lấy từ Bill cho chắc chắn ngày khám
     appointments = db.session.query(func.date(Bill.created_date), func.count(Bill.id)) \

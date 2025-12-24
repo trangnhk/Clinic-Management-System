@@ -83,3 +83,8 @@ h1 {
 .primary-text{
     font-size: 14px;
 }
+
+.text-value{
+    font-size: 20px;
+    color: #CC5063;
+}

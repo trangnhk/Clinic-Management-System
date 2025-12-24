@@ -59,10 +59,10 @@
     <!REPORT CONTENT>
     {% if report_type == "overview" %}
     <div class="row text-center mb-4">
-        <div class="col-md-3 fw-bold">Total Appointments<br><span class="text-muted">...</span></div>
-        <div class="col-md-3 fw-bold">New Patients<br><span class="text-muted">...</span></div>
-        <div class="col-md-3 fw-bold">Revenue<br><span class="text-danger">... VNĐ</span></div>
-        <div class="col-md-3 fw-bold">Medicines<br><span class="text-muted">...</span></div>
+        <div class="col-md-3 fw-bold">Total Appointments<br><span class="text-value">{{ stats.datasets[0].data[0] }}</span></div>
+        <div class="col-md-3 fw-bold">New Patients<br><span class="text-value">...</span></div>
+        <div class="col-md-3 fw-bold">Revenue<br><span class="text-value">{{ "{:,.0f}".format(stats.datasets[1].data[0] | float)}} VNĐ</span></div>
+        <div class="col-md-3 fw-bold">Medicines<br><span class="text-value">{{ stats.datasets[2].data[0] }}</span></div>
     </div>
 
     <div class="row">

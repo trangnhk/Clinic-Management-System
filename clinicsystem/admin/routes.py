@@ -36,6 +36,7 @@ def admin_stats():
 
     if report_type == 'overview':
         stats_data = dao.overview_report(month, year)
+        print(stats_data)
         return render_template(
             'admin/stats.html',
             stats=stats_data,

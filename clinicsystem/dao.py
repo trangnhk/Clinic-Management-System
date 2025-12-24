@@ -3,9 +3,12 @@ from datetime import datetime, date
 import cloudinary.uploader
 from flask import json
 from sqlalchemy import func, extract
-from clinicsystem.models import User, Patient, Nurse, Doctor, Cashier, UserGender, Administrator, UserRole, \
-    ExaminationList, Appointment, ExaminationStatus, Bill, BillStatus, Prescription, DetailPrescrip, Medicine, \
-    AppointmentStatus, Allergy
+from clinicsystem.models import (
+    User, Patient, Nurse, Doctor, Cashier, UserGender,
+    Administrator, UserRole, ExaminationList, Appointment,
+    ExaminationStatus, Bill, BillStatus, Prescription,
+    DetailPrescrip, Medicine, AppointmentStatus, Allergy, Unit
+)
 from clinicsystem import app, db
 import hashlib
 
@@ -341,7 +344,6 @@ def load_menu_bar_nurse():
         return json.load(f)
 
 
-# CASHIER
 def get_waiting_bills():
     return Bill.query.filter(Bill.status == BillStatus.UNPAID).all()
 
@@ -389,6 +391,10 @@ def get_available_years():
 
 
 
+
+#ADMIN
+
+# Báo cáo doanh thu (Trang 1)
 def overview_report(month, year):
     # 1. Xu hướng bệnh nhân (Appointments) - Lấy từ Bill cho chắc chắn ngày khám
     appointments = db.session.query(func.date(Bill.created_date), func.count(Bill.id)) \
@@ -454,6 +460,7 @@ def revenue_report(month, year):
         "table": rows,
         "chart": chart_data
     }
+
 
 
 # Báo cáo sử dụng thuốc (Trang 3)

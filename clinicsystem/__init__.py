@@ -8,7 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.secret_key = "NGOHOANGKIEUTRANG"
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:Nhinho3008@localhost/clinicdb?charset=utf8mb4"
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:123456@localhost/clinicdb?charset=utf8mb4"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
 cloudinary.config(cloud_name='dxfbpkmen',

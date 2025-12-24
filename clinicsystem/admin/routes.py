@@ -51,7 +51,7 @@ def admin_stats():
         print(stats_data)
         return render_template(
             'admin/stats.html',
-            table_data=stats_data["table"],
+            stats=stats_data["table"],
             chart_data=stats_data["chart"],
             report_type=report_type,
             month=month,

@@ -50,7 +50,3 @@ def api_pay():
         return jsonify({'success': True})
     return jsonify({'success': False})
 
-# @cashier_page.route('/api/search/<string:patient>', methods=['POST'])
-# def api_search(patient):
-#     kw = request.args.get("patient", "")
-#

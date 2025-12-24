@@ -10,7 +10,7 @@
             </div>
 
             <div class="p-2">
-                <input type="text" class="form-control" placeholder="Tìm bệnh nhân...">
+                <input type="text" id="searchInput" class="form-control" placeholder="Tìm bệnh nhân...">
             </div>
 
             <div class="flex-grow-1" style="overflow-y: auto;">
@@ -23,7 +23,7 @@
                     </thead>
                     <tbody>
                         {% for item in waiting_list %}
-                        <tr onclick="loadBillDetail('{{ item.id }}')" style="cursor: pointer; border-bottom: 1px solid #eee;">
+                        <tr class="patient-row" onclick="loadBillDetail('{{ item.id }}')" style="cursor: pointer; border-bottom: 1px solid #eee;">
                             <td class="fw-bold text-danger">{{ item.id }}</td>
                             <td>
                                 <div class="fw-bold">{{ item.prescrip.patient.fullname }}</div>

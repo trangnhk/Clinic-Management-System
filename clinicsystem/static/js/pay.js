@@ -1,3 +1,23 @@
+// Tìm kiếm bệnh nhân
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        // 1. Chuyển thành chữ thường
+        const searchText = this.value.toLowerCase();
+
+        // 2. Lấy tất cả các dòng bệnh nhân
+        const rows = document.querySelectorAll('.patient-row');
+
+        rows.forEach(row => {
+            const rowText = row.innerText.toLowerCase(); // Lấy toàn bộ chữ trong dòng đó
+
+            // 3. Kiểm tra
+            if (rowText.includes(searchText)) {
+                row.style.display = ''; // Hiện bình thường
+            } else {
+                row.style.display = 'none'; // Ẩn đi
+            }
+        });
+    });
+
 let currentBillId = null;
 
 // 1. Hàm gọi API lấy chi tiết
@@ -27,9 +47,9 @@ function loadBillDetail(billId) {
                 document.getElementById('p-diagnosis').innerText = data.diagnosis;
 
                 // 4. Tiền tệ
-                document.getElementById('fee-med').innerText = data.med_fee.toLocaleString() + " VND";
-                document.getElementById('fee-exam').innerText = data.exam_fee.toLocaleString() + " VND";
-                document.getElementById('total-money').innerText = data.total.toLocaleString() + " VND";
+                document.getElementById('fee-med').innerText = parseInt(data.med_fee).toLocaleString() + " VND";
+                document.getElementById('fee-exam').innerText = parseInt(data.exam_fee).toLocaleString() + " VND";
+                document.getElementById('total-money').innerText = parseInt(data.total).toLocaleString() + " VND";
 
                 // 5. Bảng thuốc
                 let tableHtml = "";

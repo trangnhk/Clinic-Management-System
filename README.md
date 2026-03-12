@@ -189,7 +189,9 @@ Clinic-Management-System/
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [GNU Affero General Public License v3.0 (AGPL-3.0)](LICENSE).
+
+> Any modified version of this project that is used to provide a network service must also be released under the AGPL-3.0 license with its full source code made publicly available.
 
 ---
 
